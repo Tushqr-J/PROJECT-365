@@ -193,14 +193,19 @@
   .crown-badge { position: absolute; top: 4px; right: 4px; font-size: 16px; z-index: 3; filter: drop-shadow(0 0 4px rgba(245,200,66,0.8)); }
   .fav-badge { position: absolute; top: 4px; left: 4px; font-size: 13px; z-index: 3; }
 
-  .album-card.is-ten { box-shadow: 0 0 0 2px var(--c10), 0 0 20px rgba(224,64,200,0.4); }
+  .album-card.is-ten {
+    box-shadow: 0 0 0 2.5px var(--c10), 0 0 18px rgba(224,64,200,0.55), 0 0 36px rgba(224,64,200,0.2);
+    animation: fadeUp 0.3s ease both, tenPulse 3s ease-in-out infinite;
+  }
 
-  .ten-emoji {
-    position: absolute; top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 28px; z-index: 2;
-    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.8));
-    pointer-events: none;
+  @keyframes tenPulse {
+    0%,100% { box-shadow: 0 0 0 2.5px var(--c10), 0 0 18px rgba(224,64,200,0.55), 0 0 36px rgba(224,64,200,0.2); }
+    50% { box-shadow: 0 0 0 3px var(--c10), 0 0 30px rgba(224,64,200,0.8), 0 0 55px rgba(224,64,200,0.4); }
+  }
+
+  .album-card.is-ten .rating-badge {
+    background: var(--c10) !important;
+    box-shadow: 0 0 8px rgba(224,64,200,0.8);
   }
 
   /* LIST */
@@ -374,6 +379,18 @@
   .album-card, .list-item { animation: fadeUp 0.3s ease both; }
 
   .fetch-banner { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text-muted); text-align: center; padding: 8px; letter-spacing: 0.5px; display: none; }
+
+  .cover-upload-btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; padding: 10px 14px; background: var(--surface2);
+    border: 1px dashed #444; border-radius: 10px; color: var(--text-dim);
+    font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer;
+    transition: border-color 0.15s, color 0.15s; margin-top: 6px;
+  }
+  .cover-upload-btn:active { border-color: #888; color: #fff; }
+
+  .edit-section { padding: 0 18px 16px; }
+  .edit-section-title { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
 </style>
 </head>
 <body>
@@ -461,6 +478,18 @@
     <div class="modal-header" id="detailHeader"></div>
     <div class="modal-divider"></div>
     <div class="modal-actions" id="detailActions"></div>
+    <div class="edit-section" id="editSection" style="display:none">
+      <div class="edit-section-title">Edit Rating</div>
+      <div class="rating-picker" id="editRatingPicker"></div>
+      <div style="margin-top:10px;">
+        <div class="edit-section-title">Change Cover</div>
+        <label class="cover-upload-btn">
+          📁 Upload new cover image
+          <input type="file" id="editCoverFile" accept="image/*" style="display:none" onchange="handleEditCoverUpload(event)">
+        </label>
+      </div>
+      <button class="submit-btn" style="margin-top:12px;" onclick="saveEdit()">SAVE CHANGES</button>
+    </div>
   </div>
 </div>
 
@@ -489,6 +518,14 @@
           <div style="display:flex;gap:8px;">
             <input class="form-input" style="flex:1" id="manualTitle" placeholder="Album title" autocomplete="off">
             <input class="form-input" style="flex:1" id="manualArtist" placeholder="Artist" autocomplete="off">
+          </div>
+          <input class="form-input" id="manualGenre" placeholder="Genre (optional)" autocomplete="off">
+          <label class="cover-upload-btn">
+            📁 Upload cover image
+            <input type="file" id="manualCoverFile" accept="image/*" style="display:none" onchange="handleManualCoverUpload(event)">
+          </label>
+          <div id="manualCoverPreview" style="display:none;margin-top:4px;">
+            <img id="manualCoverImg" style="width:60px;height:60px;border-radius:8px;object-fit:cover;" alt="">
           </div>
         </div>
       </div>
@@ -670,12 +707,23 @@ async function spotifySearch(q) {
 }
 
 async function spotifyFetchCover(title, artist) {
-  // try precise search first, then broader
   let results = await spotifySearch(`album:${title} artist:${artist}`);
   if (!results.length) results = await spotifySearch(`${title} ${artist}`);
   if (!results.length) results = await spotifySearch(title);
-  const img = results[0]?.images?.[0]?.url || '';
-  return { cover: img, genre: '' };
+  if (!results.length) return { cover: '', genre: '' };
+  const album = results[0];
+  const img = album?.images?.[0]?.url || '';
+  // fetch genre from artist
+  let genre = '';
+  const artistId = album?.artists?.[0]?.id;
+  if (artistId && spotifyToken) {
+    try {
+      const ar = await fetch(`https://api.spotify.com/v1/artists/${artistId}`, { headers: { Authorization: `Bearer ${spotifyToken}` } });
+      const ad = await ar.json();
+      genre = ad?.genres?.[0] || '';
+    } catch(e) {}
+  }
+  return { cover: img, genre };
 }
 
 // ── COLOR HELPERS ──
@@ -707,7 +755,6 @@ function renderWall() {
   document.getElementById('albumGrid').innerHTML = getSorted(albums, currentSort).map((al,i) => `
     <div class="album-card ${al.rating===10?'is-ten':''}" style="animation-delay:${Math.min(i,20)*0.03}s" onclick="openDetail(${al.id})">
       ${al.cover ? `<img src="${al.cover}" alt="" loading="lazy">` : `<div class="cover-placeholder"><div class="ph-title">${al.title}</div><div class="ph-artist">${al.artist}</div></div>`}
-      ${al.rating===10&&al.emoji?`<div class="ten-emoji">${al.emoji}</div>`:''}
       ${al.id===crownId?`<div class="crown-badge">👑</div>`:''}
       ${al.fav&&al.id!==crownId?`<div class="fav-badge">♥</div>`:''}
       <div class="rating-badge" style="background:${ratingBg(al.rating)};color:#fff;">${al.rating}</div>
@@ -724,7 +771,7 @@ function renderList() {
         ${al.genre?`<div class="list-meta"><span class="genre-tag">${al.genre}</span></div>`:''}
       </div>
       <div class="list-right">
-        <div class="list-rating" style="color:${ratingColor(al.rating)}">${al.rating}${al.emoji||''}</div>
+        <div class="list-rating" style="color:${ratingColor(al.rating)}">${al.rating}</div>
         <div class="list-icons">${al.id===crownId?'👑':''}${al.fav?'♥':''}</div>
       </div>
     </div>`).join('');
@@ -740,7 +787,7 @@ function renderFavs() {
         <div class="crown-info">
           <div class="crown-album-title">${crowned.title}</div>
           <div class="crown-artist">${crowned.artist}</div>
-          <div class="crown-rating" style="color:${ratingColor(crowned.rating)}">${crowned.rating}${crowned.emoji||''}</div>
+          <div class="crown-rating" style="color:${ratingColor(crowned.rating)}">${crowned.rating}</div>
         </div>
       </div>
     </div>` : `
@@ -760,7 +807,6 @@ function renderFavs() {
     : favs.map((al,i) => `
       <div class="album-card ${al.rating===10?'is-ten':''}" style="animation-delay:${i*0.03}s" onclick="openDetail(${al.id})">
         ${al.cover?`<img src="${al.cover}" alt="" loading="lazy">`:`<div class="cover-placeholder"><div class="ph-title">${al.title}</div><div class="ph-artist">${al.artist}</div></div>`}
-        ${al.rating===10&&al.emoji?`<div class="ten-emoji">${al.emoji}</div>`:''}
         <div class="rating-badge" style="background:${ratingBg(al.rating)};color:#fff;">${al.rating}</div>
       </div>`).join('');
 }
@@ -777,21 +823,29 @@ function renderStats() {
   albums.forEach(a => { ac[a.artist]=(ac[a.artist]||0)+1; });
   const topArtists = Object.entries(ac).sort((a,b)=>b[1]-a[1]).slice(0,5);
 
+  // genre stats
+  const gc = {};
+  albums.forEach(a => { if(a.genre) { gc[a.genre]=(gc[a.genre]||0)+1; } });
+  const topGenres = Object.entries(gc).sort((a,b)=>b[1]-a[1]).slice(0,6);
+
   grid.innerHTML = `
     <div class="stat-card"><div class="stat-label">Logged</div><div class="stat-value">${albums.length}</div><div class="stat-sub">${(albums.length/365*100).toFixed(1)}% of 365</div></div>
     <div class="stat-card"><div class="stat-label">Avg Rating</div><div class="stat-value" style="color:${ratingColor(Math.round(parseFloat(avg)))}">${avg}</div><div class="stat-sub">out of 10</div></div>
     <div class="stat-card wide"><div class="stat-label">Tier Breakdown</div><div class="tier-bars">
       ${Object.entries(tc).map(([k,v])=>`<div class="tier-row"><div class="tier-label">${k}</div><div class="tier-bar-wrap"><div class="tier-bar-fill" style="width:${albums.length?v/albums.length*100:0}%;background:${tcol[k]}"></div></div><div class="tier-count">${v}</div></div>`).join('')}
     </div></div>
-    ${tens.length?`<div class="stat-card wide"><div class="stat-label">Masterpieces 🎖</div><div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;">
+    ${tens.length?`<div class="stat-card wide"><div class="stat-label">Masterpieces</div><div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;">
       ${tens.map(a=>`<div style="display:flex;align-items:center;gap:8px;background:rgba(224,64,200,0.1);border:1px solid rgba(224,64,200,0.3);border-radius:10px;padding:7px 10px;flex:1;min-width:140px;cursor:pointer;" onclick="openDetail(${a.id})">
-        ${a.cover?`<img src="${a.cover}" style="width:36px;height:36px;border-radius:5px;object-fit:cover;" alt="">`:'<div style="width:36px;height:36px;border-radius:5px;background:var(--surface3);display:flex;align-items:center;justify-content:center;">🎵</div>'}
-        <div><div style="font-size:11px;font-weight:600;">${a.title} ${a.emoji}</div><div style="font-size:10px;color:var(--text-muted)">${a.artist}</div></div>
+        ${a.cover?`<img src="${a.cover}" style="width:36px;height:36px;border-radius:5px;object-fit:cover;box-shadow:0 0 8px rgba(224,64,200,0.4);" alt="">`:'<div style="width:36px;height:36px;border-radius:5px;background:var(--surface3);display:flex;align-items:center;justify-content:center;">🎵</div>'}
+        <div><div style="font-size:11px;font-weight:600;">${a.title}</div><div style="font-size:10px;color:var(--text-muted)">${a.artist}</div></div>
       </div>`).join('')}
     </div></div>`:''}
     <div class="stat-card wide"><div class="stat-label">Most Listened Artists</div><div class="top-artists">
       ${topArtists.map(([n,c])=>`<div class="artist-row"><div class="artist-name">${n}</div><div class="artist-count">${c} album${c>1?'s':''}</div></div>`).join('')}
-    </div></div>`;
+    </div></div>
+    ${topGenres.length?`<div class="stat-card wide"><div class="stat-label">Genres</div><div class="tier-bars" style="margin-top:8px;">
+      ${topGenres.map(([g,c])=>`<div class="tier-row"><div class="tier-label" style="width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${g}</div><div class="tier-bar-wrap"><div class="tier-bar-fill" style="width:${topGenres[0][1]?c/topGenres[0][1]*100:0}%;background:#5b3fa8;"></div></div><div class="tier-count">${c}</div></div>`).join('')}
+    </div></div>`:''}`;
 }
 
 function renderAll() {
@@ -819,20 +873,41 @@ function openDetail(id) {
   const al = albums.find(a=>a.id===id);
   if (!al) return;
   document.getElementById('detailHeader').innerHTML = `
-    ${al.cover?`<img class="modal-cover" src="${al.cover}" alt="">`:`<div class="modal-cover-placeholder">🎵</div>`}
+    <div style="position:relative;flex-shrink:0;">
+      ${al.cover?`<img class="modal-cover" src="${al.cover}" alt="">`:`<div class="modal-cover-placeholder">🎵</div>`}
+      <label style="position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,0.7);border-radius:6px;padding:4px 6px;font-size:10px;color:#ccc;cursor:pointer;z-index:2;">
+        ✎<input type="file" accept="image/*" style="display:none;" onchange="changeCover(${id}, this)">
+      </label>
+    </div>
     <div class="modal-info">
       <div class="modal-album">${al.title}</div>
       <div class="modal-artist">${al.artist}</div>
       <div class="modal-rating" style="color:${ratingColor(al.rating)}">${al.rating}/10</div>
       ${al.genre?`<div class="modal-genre">${al.genre}</div>`:''}
-      ${al.rating===10&&al.emoji?`<div style="font-size:22px;margin-top:4px;">${al.emoji}</div>`:''}
       ${al.notes?`<div style="font-size:12px;color:var(--text-dim);margin-top:6px;font-style:italic;">${al.notes}</div>`:''}
     </div>`;
   document.getElementById('detailActions').innerHTML = `
     <button class="action-btn fav-btn" onclick="toggleFav(${id})">${al.fav?'♥ Unfavourite':'♡ Favourite'}</button>
     <button class="action-btn crown-btn" onclick="setCrown(${id})">${al.id===crownId?'👑 Uncrown':'👑 Crown This'}</button>
+    <button class="action-btn" onclick="openEdit(${id})" style="border-color:#555;color:#ccc;">✏️ Edit</button>
     <button class="action-btn danger" onclick="confirmDelete(${id})">🗑 Remove</button>`;
+  document.getElementById('editSection').style.display = 'none';
   document.getElementById('detailOverlay').classList.add('open');
+}
+
+function changeCover(id, input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const al = albums.find(a=>a.id===id);
+    if (!al) return;
+    al.cover = e.target.result;
+    save();
+    renderAll();
+    openDetail(id); // refresh modal
+  };
+  reader.readAsDataURL(file);
 }
 
 function closeDetailIfBg(e) { if (e.target===document.getElementById('detailOverlay')) closeDetail(); }
@@ -853,13 +928,64 @@ function deleteAlbum(id) { albums=albums.filter(a=>a.id!==id); if(crownId===id) 
 function toggleFav(id) { const al=albums.find(a=>a.id===id); if(!al) return; al.fav=!al.fav; save(); closeDetail(); renderAll(); }
 function setCrown(id) { crownId=crownId===id?null:id; save(); closeDetail(); renderAll(); }
 
+// ── EDIT ──
+let editAlbumId = null;
+let editNewCover = null;
+
+function openEdit(id) {
+  const al = albums.find(a => a.id === id);
+  if (!al) return;
+  editAlbumId = id;
+  editNewCover = null;
+
+  const picker = document.getElementById('editRatingPicker');
+  picker.innerHTML = Array.from({length:11},(_,i)=>`
+    <div class="rating-pick ${al.rating===i?'selected':''}"
+         style="${al.rating===i?`background:${ratingBg(i)};color:#fff;border-color:transparent`:''}"
+         onclick="pickEditRating(${i})">${i}</div>`).join('');
+
+  document.getElementById('editSection').style.display = 'block';
+  // scroll modal down to show edit section
+  document.getElementById('editSection').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function pickEditRating(n) {
+  editAlbumId && (albums.find(a=>a.id===editAlbumId)._pendingRating = n);
+  const picker = document.getElementById('editRatingPicker');
+  picker.querySelectorAll('.rating-pick').forEach((el,i) => {
+    el.className = 'rating-pick' + (i===n?' selected':'');
+    el.style.cssText = i===n ? `background:${ratingBg(i)};color:#fff;border-color:transparent` : '';
+  });
+}
+
+function handleEditCoverUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => { editNewCover = ev.target.result; };
+  reader.readAsDataURL(file);
+}
+
+function saveEdit() {
+  const al = albums.find(a => a.id === editAlbumId);
+  if (!al) return;
+  if (al._pendingRating !== undefined) { al.rating = al._pendingRating; delete al._pendingRating; }
+  if (editNewCover) al.cover = editNewCover;
+  editAlbumId = null; editNewCover = null;
+  save();
+  closeDetail();
+  renderAll();
+}
+
 // ── ADD MODAL ──
 function openAddModal() {
   selectedAlbumData=null; selectedRating=null;
-  ['searchInput','manualTitle','manualArtist','emojiInput','notesInput'].forEach(id => document.getElementById(id).value='');
+  ['searchInput','manualTitle','manualArtist','emojiInput','notesInput','manualGenre'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
   document.getElementById('searchResults').style.display='none';
   document.getElementById('selectedPreview').style.display='none';
   document.getElementById('manualGroup').style.display='none';
+  document.getElementById('manualCoverPreview').style.display='none';
+  manualCoverDataUrl = null;
   buildRatingPicker();
   document.getElementById('addOverlay').classList.add('open');
 }
@@ -920,6 +1046,22 @@ function selectResult(i) {
 function showManual() { document.getElementById('searchResults').style.display='none'; document.getElementById('manualGroup').style.display='flex'; }
 function clearSelection() { selectedAlbumData=null; document.getElementById('selectedPreview').style.display='none'; }
 
+let manualCoverDataUrl = null;
+
+function handleManualCoverUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    manualCoverDataUrl = ev.target.result;
+    const preview = document.getElementById('manualCoverPreview');
+    const img = document.getElementById('manualCoverImg');
+    img.src = manualCoverDataUrl;
+    preview.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
 async function submitAlbum() {
   if (selectedRating===null) { alert('Pick a rating'); return; }
   const btn = document.getElementById('submitBtn');
@@ -930,15 +1072,22 @@ async function submitAlbum() {
   } else {
     title = document.getElementById('manualTitle').value.trim();
     artist = document.getElementById('manualArtist').value.trim();
+    genre = document.getElementById('manualGenre').value.trim();
     if (!title||!artist) { btn.disabled=false; btn.textContent='LOG ALBUM'; alert('Enter title and artist'); return; }
-    const info = await spotifyFetchCover(title, artist);
-    cover = info.cover;
+    // use uploaded cover if provided, otherwise try Spotify
+    if (manualCoverDataUrl) {
+      cover = manualCoverDataUrl;
+    } else {
+      const info = await spotifyFetchCover(title, artist);
+      cover = info.cover;
+    }
   }
   const emoji = document.getElementById('emojiInput').value.trim();
   const notes = document.getElementById('notesInput').value.trim();
   albums.push({ id: Date.now(), title, artist, rating: selectedRating, emoji: selectedRating===10?emoji:'', notes, cover, genre, fav: false, dateAdded: Date.now() });
   save();
   btn.disabled=false; btn.textContent='LOG ALBUM';
+  manualCoverDataUrl = null;
   closeAdd();
   switchTab('wall');
 }
