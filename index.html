@@ -16,19 +16,10 @@
     --text: #f0f0f0;
     --text-muted: #666;
     --text-dim: #999;
-    --c0: #7a4f2e;
-    --c1: #8b5a2b;
-    --c2: #9a6535;
-    --c3: #a8713f;
-    --c4: #1a6b6b;
-    --c5: #1d7a7a;
-    --c6: #228888;
-    --c7: #5b3fa8;
-    --c8: #6a4abf;
-    --c9: #7a55d4;
     --c10: #e040c8;
     --gold: #f5c842;
     --fav: #e05050;
+    --spotify: #1DB954;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -42,7 +33,6 @@
     overflow-x: hidden;
   }
 
-  /* noise overlay */
   body::before {
     content: '';
     position: fixed;
@@ -53,970 +43,420 @@
     opacity: 0.4;
   }
 
-  /* ── HEADER ── */
+  /* LOGIN */
+  .login-screen {
+    position: fixed; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    z-index: 999; background: var(--bg);
+    gap: 20px; padding: 40px; text-align: center;
+  }
+
+  .login-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 56px; letter-spacing: 6px;
+    background: linear-gradient(135deg, #fff 0%, #666 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    line-height: 1;
+  }
+
+  .login-year {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; color: var(--text-muted); letter-spacing: 3px;
+  }
+
+  .login-desc { font-size: 13px; color: var(--text-dim); max-width: 240px; line-height: 1.7; }
+
+  .spotify-btn {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--spotify); color: #000;
+    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 15px;
+    padding: 14px 28px; border-radius: 999px; border: none;
+    cursor: pointer; transition: transform 0.15s, opacity 0.15s;
+    margin-top: 8px;
+  }
+  .spotify-btn:active { transform: scale(0.96); opacity: 0.9; }
+  .spotify-btn svg { width: 22px; height: 22px; }
+
+  /* HEADER */
   .header {
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    position: sticky; top: 0; z-index: 100;
     background: rgba(10,10,10,0.92);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border);
     padding: env(safe-area-inset-top, 0) 0 0;
   }
 
   .header-inner {
-    display: flex;
-    align-items: center;
+    display: flex; align-items: center;
     justify-content: space-between;
-    padding: 14px 18px;
-    gap: 12px;
+    padding: 14px 18px; gap: 12px;
   }
 
   .header-left h1 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 28px;
-    letter-spacing: 2px;
-    line-height: 1;
+    font-family: 'Bebas Neue', sans-serif; font-size: 28px;
+    letter-spacing: 2px; line-height: 1;
     background: linear-gradient(135deg, #fff 0%, #aaa 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   }
 
   .header-left .sub {
-    font-family: 'Space Mono', monospace;
-    font-size: 10px;
-    color: var(--text-muted);
-    letter-spacing: 1px;
-    margin-top: 2px;
+    font-family: 'Space Mono', monospace; font-size: 10px;
+    color: var(--text-muted); letter-spacing: 1px; margin-top: 2px;
   }
 
   .progress-pill {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    padding: 6px 12px;
-    flex-shrink: 0;
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 999px; padding: 6px 12px; flex-shrink: 0;
   }
 
   .progress-pill .count {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 18px;
-    letter-spacing: 1px;
-    color: #fff;
-    line-height: 1;
+    font-family: 'Bebas Neue', sans-serif; font-size: 18px;
+    letter-spacing: 1px; color: #fff; line-height: 1;
   }
 
   .progress-pill .total {
-    font-family: 'Space Mono', monospace;
-    font-size: 10px;
-    color: var(--text-muted);
+    font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text-muted);
   }
 
-  .progress-ring-wrap {
-    position: relative;
-    width: 32px;
-    height: 32px;
-  }
-
-  .progress-ring-wrap svg {
-    transform: rotate(-90deg);
-  }
-
+  .progress-ring-wrap { width: 32px; height: 32px; }
+  .progress-ring-wrap svg { transform: rotate(-90deg); }
   .ring-bg { fill: none; stroke: var(--border); stroke-width: 3; }
-  .ring-fill {
-    fill: none;
-    stroke: var(--c10);
-    stroke-width: 3;
-    stroke-linecap: round;
-    transition: stroke-dashoffset 0.6s ease;
-  }
+  .ring-fill { fill: none; stroke: var(--c10); stroke-width: 3; stroke-linecap: round; transition: stroke-dashoffset 0.6s ease; }
 
-  /* ── NAV TABS ── */
-  .nav-tabs {
-    display: flex;
-    gap: 0;
-    border-bottom: 1px solid var(--border);
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
+  /* NAV */
+  .nav-tabs { display: flex; border-bottom: 1px solid var(--border); overflow-x: auto; scrollbar-width: none; }
   .nav-tabs::-webkit-scrollbar { display: none; }
 
   .nav-tab {
-    flex: 1;
-    min-width: 70px;
-    padding: 10px 6px;
-    background: none;
-    border: none;
-    color: var(--text-muted);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-    cursor: pointer;
-    transition: all 0.2s;
-    position: relative;
-    white-space: nowrap;
+    flex: 1; min-width: 70px; padding: 10px 6px;
+    background: none; border: none; color: var(--text-muted);
+    font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 500;
+    letter-spacing: 0.5px; cursor: pointer; transition: all 0.2s;
+    position: relative; white-space: nowrap;
   }
-
-  .nav-tab.active {
-    color: #fff;
-  }
-
+  .nav-tab.active { color: #fff; }
   .nav-tab.active::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 20%;
-    right: 20%;
-    height: 2px;
-    background: var(--c10);
-    border-radius: 2px 2px 0 0;
+    content: ''; position: absolute; bottom: 0; left: 20%; right: 20%;
+    height: 2px; background: var(--c10); border-radius: 2px 2px 0 0;
   }
 
-  /* ── MAIN ── */
-  .main {
-    padding: 16px 14px;
-    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 100px);
-    position: relative;
-    z-index: 1;
-  }
+  /* MAIN */
+  .main { padding: 16px 14px; padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 100px); position: relative; z-index: 1; }
 
-  /* ── SORT / FILTER BAR ── */
-  .toolbar {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 16px;
-    overflow-x: auto;
-    scrollbar-width: none;
-    padding-bottom: 2px;
-  }
+  /* TOOLBAR */
+  .toolbar { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
   .toolbar::-webkit-scrollbar { display: none; }
 
   .tool-btn {
-    flex-shrink: 0;
-    padding: 6px 12px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    color: var(--text-dim);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 12px;
-    cursor: pointer;
-    transition: all 0.15s;
-    white-space: nowrap;
+    flex-shrink: 0; padding: 6px 12px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 999px; color: var(--text-dim);
+    font-family: 'DM Sans', sans-serif; font-size: 12px;
+    cursor: pointer; transition: all 0.15s; white-space: nowrap;
   }
+  .tool-btn.active { background: var(--surface3); border-color: #555; color: #fff; }
 
-  .tool-btn.active, .tool-btn:active {
-    background: var(--surface3);
-    border-color: #555;
-    color: #fff;
-  }
-
-  /* ── ALBUM GRID ── */
-  .album-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-  }
+  /* GRID */
+  .album-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 
   .album-card {
-    position: relative;
-    border-radius: 10px;
-    overflow: hidden;
-    aspect-ratio: 1;
-    cursor: pointer;
-    background: var(--surface2);
+    position: relative; border-radius: 10px; overflow: hidden;
+    aspect-ratio: 1; cursor: pointer; background: var(--surface2);
     transition: transform 0.15s ease;
   }
-
   .album-card:active { transform: scale(0.96); }
+  .album-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-  .album-card img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
+  .cover-placeholder {
+    width: 100%; height: 100%; display: flex; align-items: center;
+    justify-content: center; flex-direction: column; gap: 4px;
+    background: var(--surface3); padding: 8px; text-align: center;
   }
+  .ph-title { font-size: 9px; font-weight: 700; color: var(--text-dim); line-height: 1.2; word-break: break-word; }
+  .ph-artist { font-size: 8px; color: var(--text-muted); }
 
-  .album-card .cover-placeholder {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 4px;
-    background: var(--surface3);
-    padding: 8px;
-    text-align: center;
-  }
-
-  .cover-placeholder .ph-title {
-    font-size: 9px;
-    font-weight: 700;
-    color: var(--text-dim);
-    line-height: 1.2;
-    word-break: break-word;
-  }
-
-  .cover-placeholder .ph-artist {
-    font-size: 8px;
-    color: var(--text-muted);
-  }
-
-  /* rating badge */
   .rating-badge {
-    position: absolute;
-    bottom: 5px;
-    left: 5px;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 14px;
-    padding: 2px 6px;
-    border-radius: 5px;
-    line-height: 1;
-    letter-spacing: 0.5px;
+    position: absolute; bottom: 5px; left: 5px;
+    font-family: 'Bebas Neue', sans-serif; font-size: 14px;
+    padding: 2px 6px; border-radius: 5px; line-height: 1;
+    letter-spacing: 0.5px; z-index: 2;
   }
 
-  /* overlay gradient */
   .album-card::after {
-    content: '';
-    position: absolute;
-    inset: 0;
+    content: ''; position: absolute; inset: 0;
     background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 50%);
-    pointer-events: none;
+    pointer-events: none; z-index: 1;
   }
 
-  /* crown */
-  .crown-badge {
-    position: absolute;
-    top: 4px;
-    right: 4px;
-    font-size: 16px;
-    z-index: 3;
-    filter: drop-shadow(0 0 4px rgba(245,200,66,0.8));
-  }
+  .crown-badge { position: absolute; top: 4px; right: 4px; font-size: 16px; z-index: 3; filter: drop-shadow(0 0 4px rgba(245,200,66,0.8)); }
+  .fav-badge { position: absolute; top: 4px; left: 4px; font-size: 13px; z-index: 3; }
 
-  /* fav heart */
-  .fav-badge {
-    position: absolute;
-    top: 4px;
-    left: 4px;
-    font-size: 13px;
-    z-index: 3;
-  }
-
-  /* 10 glow */
-  .album-card.is-ten {
-    box-shadow: 0 0 0 2px var(--c10), 0 0 20px rgba(224,64,200,0.4);
-  }
-
-  .album-card.is-ten::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(224,64,200,0.15) 0%, transparent 60%);
-    z-index: 1;
-    pointer-events: none;
-  }
+  .album-card.is-ten { box-shadow: 0 0 0 2px var(--c10), 0 0 20px rgba(224,64,200,0.4); }
 
   .ten-emoji {
-    position: absolute;
-    top: 50%;
-    left: 50%;
+    position: absolute; top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 28px;
-    z-index: 2;
+    font-size: 28px; z-index: 2;
     filter: drop-shadow(0 2px 8px rgba(0,0,0,0.8));
     pointer-events: none;
   }
 
-  /* ── LIST VIEW ── */
-  .album-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
+  /* LIST */
+  .album-list { display: flex; flex-direction: column; gap: 8px; }
 
   .list-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 10px;
-    cursor: pointer;
-    transition: all 0.15s;
-    position: relative;
-    overflow: hidden;
+    display: flex; align-items: center; gap: 12px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 10px; cursor: pointer; transition: all 0.15s;
   }
-
   .list-item:active { transform: scale(0.98); }
+  .list-item.is-ten { border-color: var(--c10); box-shadow: 0 0 12px rgba(224,64,200,0.2); }
 
-  .list-item.is-ten {
-    border-color: var(--c10);
-    box-shadow: 0 0 12px rgba(224,64,200,0.2);
-  }
+  .list-thumb { width: 52px; height: 52px; border-radius: 7px; object-fit: cover; flex-shrink: 0; background: var(--surface3); }
+  .list-thumb-placeholder { width: 52px; height: 52px; border-radius: 7px; background: var(--surface3); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 20px; }
 
-  .list-thumb {
-    width: 52px;
-    height: 52px;
-    border-radius: 7px;
-    object-fit: cover;
-    flex-shrink: 0;
-    background: var(--surface3);
-  }
+  .list-info { flex: 1; min-width: 0; }
+  .list-title { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .list-artist { font-size: 11px; color: var(--text-muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .list-meta { display: flex; align-items: center; gap: 4px; margin-top: 4px; }
 
-  .list-thumb-placeholder {
-    width: 52px;
-    height: 52px;
-    border-radius: 7px;
-    background: var(--surface3);
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-  }
+  .genre-tag { font-size: 9px; background: var(--surface3); border: 1px solid var(--border); color: var(--text-muted); padding: 2px 6px; border-radius: 999px; font-family: 'Space Mono', monospace; }
 
-  .list-info {
-    flex: 1;
-    min-width: 0;
-  }
+  .list-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+  .list-rating { font-family: 'Bebas Neue', sans-serif; font-size: 20px; line-height: 1; }
+  .list-icons { font-size: 12px; }
 
-  .list-title {
-    font-size: 13px;
-    font-weight: 600;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    color: var(--text);
-  }
-
-  .list-artist {
-    font-size: 11px;
-    color: var(--text-muted);
-    margin-top: 1px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .list-meta {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    margin-top: 4px;
-  }
-
-  .genre-tag {
-    font-size: 9px;
-    background: var(--surface3);
-    border: 1px solid var(--border);
-    color: var(--text-muted);
-    padding: 2px 6px;
-    border-radius: 999px;
-    font-family: 'Space Mono', monospace;
-  }
-
-  .list-right {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 6px;
-    flex-shrink: 0;
-  }
-
-  .list-rating {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 20px;
-    line-height: 1;
-    letter-spacing: 1px;
-  }
-
-  .list-icons {
-    display: flex;
-    gap: 4px;
-    font-size: 12px;
-  }
-
-  /* ── STATS VIEW ── */
-  .stats-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-
-  .stat-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 14px;
-  }
-
+  /* STATS */
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px; }
   .stat-card.wide { grid-column: 1 / -1; }
-
-  .stat-label {
-    font-family: 'Space Mono', monospace;
-    font-size: 9px;
-    color: var(--text-muted);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    margin-bottom: 6px;
-  }
-
-  .stat-value {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 36px;
-    line-height: 1;
-    letter-spacing: 1px;
-    color: #fff;
-  }
-
-  .stat-sub {
-    font-size: 11px;
-    color: var(--text-muted);
-    margin-top: 2px;
-  }
+  .stat-label { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+  .stat-value { font-family: 'Bebas Neue', sans-serif; font-size: 36px; line-height: 1; color: #fff; }
+  .stat-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
 
   .tier-bars { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
-
   .tier-row { display: flex; align-items: center; gap: 8px; }
-
-  .tier-label {
-    font-family: 'Space Mono', monospace;
-    font-size: 9px;
-    width: 30px;
-    flex-shrink: 0;
-    color: var(--text-muted);
-  }
-
-  .tier-bar-wrap {
-    flex: 1;
-    height: 6px;
-    background: var(--surface3);
-    border-radius: 3px;
-    overflow: hidden;
-  }
-
-  .tier-bar-fill {
-    height: 100%;
-    border-radius: 3px;
-    transition: width 0.6s ease;
-  }
-
-  .tier-count {
-    font-family: 'Space Mono', monospace;
-    font-size: 9px;
-    color: var(--text-muted);
-    width: 20px;
-    text-align: right;
-  }
+  .tier-label { font-family: 'Space Mono', monospace; font-size: 9px; width: 30px; flex-shrink: 0; color: var(--text-muted); }
+  .tier-bar-wrap { flex: 1; height: 6px; background: var(--surface3); border-radius: 3px; overflow: hidden; }
+  .tier-bar-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+  .tier-count { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--text-muted); width: 20px; text-align: right; }
 
   .top-artists { margin-top: 4px; display: flex; flex-direction: column; gap: 6px; }
-
-  .artist-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 7px 10px;
-    background: var(--surface2);
-    border-radius: 8px;
-    border: 1px solid var(--border);
-  }
-
+  .artist-row { display: flex; align-items: center; justify-content: space-between; padding: 7px 10px; background: var(--surface2); border-radius: 8px; border: 1px solid var(--border); }
   .artist-name { font-size: 12px; font-weight: 500; }
-  .artist-count {
-    font-family: 'Space Mono', monospace;
-    font-size: 10px;
-    color: var(--text-muted);
-  }
+  .artist-count { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text-muted); }
 
-  /* ── FAVORITES VIEW ── */
-  .section-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 20px;
-    letter-spacing: 2px;
-    margin-bottom: 12px;
-    color: var(--text-dim);
-  }
+  /* CROWN / FAVS */
+  .crown-section { margin-bottom: 24px; }
+  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px; margin-bottom: 12px; color: var(--text-dim); }
 
-  .empty-state {
-    text-align: center;
-    padding: 40px 20px;
-    color: var(--text-muted);
-    font-size: 13px;
-    line-height: 1.6;
-  }
-
-  .empty-state .big { font-size: 32px; margin-bottom: 8px; }
-
-  /* ── CROWN SECTION ── */
-  .crown-section {
-    margin-bottom: 24px;
-  }
-
-  .crown-card {
-    position: relative;
-    border-radius: 16px;
-    overflow: hidden;
-    background: var(--surface);
-    border: 1px solid var(--gold);
-    box-shadow: 0 0 30px rgba(245,200,66,0.15);
-  }
-
-  .crown-banner {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 14px;
-    background: linear-gradient(90deg, rgba(245,200,66,0.15), transparent);
-    border-bottom: 1px solid rgba(245,200,66,0.2);
-  }
-
-  .crown-banner span {
-    font-family: 'Bebas Neue', sans-serif;
-    letter-spacing: 2px;
-    font-size: 13px;
-    color: var(--gold);
-  }
-
-  .crown-content {
-    display: flex;
-    gap: 14px;
-    padding: 14px;
-    align-items: center;
-  }
-
-  .crown-cover {
-    width: 80px;
-    height: 80px;
-    border-radius: 10px;
-    object-fit: cover;
-    flex-shrink: 0;
-  }
-
-  .crown-cover-placeholder {
-    width: 80px;
-    height: 80px;
-    border-radius: 10px;
-    background: var(--surface3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 30px;
-    flex-shrink: 0;
-  }
-
+  .crown-card { position: relative; border-radius: 16px; overflow: hidden; background: var(--surface); border: 1px solid var(--gold); box-shadow: 0 0 30px rgba(245,200,66,0.15); cursor: pointer; }
+  .crown-banner { display: flex; align-items: center; gap: 6px; padding: 8px 14px; background: linear-gradient(90deg, rgba(245,200,66,0.15), transparent); border-bottom: 1px solid rgba(245,200,66,0.2); }
+  .crown-banner span { font-family: 'Bebas Neue', sans-serif; letter-spacing: 2px; font-size: 13px; color: var(--gold); }
+  .crown-content { display: flex; gap: 14px; padding: 14px; align-items: center; }
+  .crown-cover { width: 80px; height: 80px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
+  .crown-cover-placeholder { width: 80px; height: 80px; border-radius: 10px; background: var(--surface3); display: flex; align-items: center; justify-content: center; font-size: 30px; flex-shrink: 0; }
   .crown-info { flex: 1; }
   .crown-album-title { font-size: 16px; font-weight: 700; line-height: 1.2; }
   .crown-artist { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
   .crown-rating { font-family: 'Bebas Neue', sans-serif; font-size: 32px; margin-top: 4px; }
 
-  /* ── MODAL ── */
-  .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.85);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    z-index: 200;
-    display: flex;
-    align-items: flex-end;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.25s ease;
-  }
+  .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 13px; line-height: 1.6; grid-column: 1/-1; }
+  .empty-state .big { font-size: 32px; margin-bottom: 8px; }
 
-  .modal-overlay.open {
-    opacity: 1;
-    pointer-events: all;
+  /* MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    z-index: 200; display: flex; align-items: flex-end;
+    opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
   }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
 
   .modal {
-    width: 100%;
-    background: var(--surface);
-    border-radius: 22px 22px 0 0;
-    border-top: 1px solid var(--border);
+    width: 100%; background: var(--surface);
+    border-radius: 22px 22px 0 0; border-top: 1px solid var(--border);
     padding: 0 0 env(safe-area-inset-bottom, 20px);
     transform: translateY(100%);
     transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    max-height: 92vh;
-    overflow-y: auto;
+    max-height: 92vh; overflow-y: auto;
   }
-
-  .modal-overlay.open .modal {
-    transform: translateY(0);
-  }
-
-  .modal-handle {
-    width: 36px;
-    height: 4px;
-    background: var(--border);
-    border-radius: 2px;
-    margin: 10px auto 0;
-  }
-
-  .modal-header {
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-    padding: 16px 18px;
-  }
-
-  .modal-cover {
-    width: 90px;
-    height: 90px;
-    border-radius: 10px;
-    object-fit: cover;
-    flex-shrink: 0;
-  }
-
-  .modal-cover-placeholder {
-    width: 90px;
-    height: 90px;
-    border-radius: 10px;
-    background: var(--surface3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 36px;
-    flex-shrink: 0;
-  }
-
+  .modal-overlay.open .modal { transform: translateY(0); }
+  .modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 10px auto 0; }
+  .modal-header { display: flex; align-items: flex-start; gap: 14px; padding: 16px 18px; }
+  .modal-cover { width: 90px; height: 90px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
+  .modal-cover-placeholder { width: 90px; height: 90px; border-radius: 10px; background: var(--surface3); display: flex; align-items: center; justify-content: center; font-size: 36px; flex-shrink: 0; }
   .modal-info { flex: 1; }
   .modal-album { font-size: 17px; font-weight: 700; line-height: 1.2; }
   .modal-artist { font-size: 13px; color: var(--text-muted); margin-top: 3px; }
   .modal-rating { font-family: 'Bebas Neue', sans-serif; font-size: 36px; margin-top: 6px; letter-spacing: 1px; }
   .modal-genre { font-size: 10px; font-family: 'Space Mono', monospace; color: var(--text-muted); margin-top: 4px; }
-  .modal-ten-emoji { font-size: 22px; margin-top: 4px; }
-
-  .modal-actions {
-    display: flex;
-    gap: 8px;
-    padding: 0 18px 12px;
-    flex-wrap: wrap;
-  }
+  .modal-actions { display: flex; gap: 8px; padding: 0 18px 12px; flex-wrap: wrap; }
+  .modal-divider { height: 1px; background: var(--border); margin: 0 18px 14px; }
 
   .action-btn {
-    flex: 1;
-    min-width: 100px;
-    padding: 10px 14px;
-    border-radius: 10px;
-    border: 1px solid var(--border);
-    background: var(--surface2);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 12px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.15s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
+    flex: 1; min-width: 100px; padding: 10px 14px; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--surface2); color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
+    cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 6px;
   }
-
   .action-btn:active { transform: scale(0.96); }
   .action-btn.crown-btn { border-color: var(--gold); color: var(--gold); }
   .action-btn.fav-btn { border-color: var(--fav); color: var(--fav); }
-  .action-btn.danger { border-color: #555; color: #aaa; }
+  .action-btn.danger { border-color: #c84040; color: #ff6060; background: #2a1a1a; }
 
-  .modal-divider {
-    height: 1px;
-    background: var(--border);
-    margin: 0 18px 14px;
-  }
-
-  /* ── ADD MODAL ── */
+  /* ADD FORM */
   .add-form { padding: 14px 18px; }
-
   .form-group { margin-bottom: 14px; }
-
-  .form-label {
-    font-family: 'Space Mono', monospace;
-    font-size: 9px;
-    color: var(--text-muted);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    margin-bottom: 6px;
-    display: block;
-  }
+  .form-label { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; display: block; }
 
   .form-input {
-    width: 100%;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 10px 12px;
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    outline: none;
-    transition: border-color 0.15s;
-    -webkit-appearance: none;
+    width: 100%; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 10px 12px; color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none;
+    transition: border-color 0.15s; -webkit-appearance: none;
   }
-
   .form-input:focus { border-color: #555; }
 
-  .search-results {
-    margin-top: 6px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    overflow: hidden;
-    display: none;
-  }
+  .search-results { margin-top: 6px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; display: none; }
 
   .search-result-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    cursor: pointer;
-    border-bottom: 1px solid var(--border);
-    transition: background 0.1s;
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+    cursor: pointer; border-bottom: 1px solid var(--border); transition: background 0.1s;
   }
-
   .search-result-item:last-child { border-bottom: none; }
   .search-result-item:active { background: var(--surface3); }
 
-  .sr-thumb {
-    width: 40px;
-    height: 40px;
-    border-radius: 6px;
-    object-fit: cover;
-    background: var(--surface3);
-    flex-shrink: 0;
-  }
-
+  .sr-thumb { width: 40px; height: 40px; border-radius: 6px; object-fit: cover; background: var(--surface3); flex-shrink: 0; }
   .sr-info { flex: 1; min-width: 0; }
   .sr-title { font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .sr-artist { font-size: 11px; color: var(--text-muted); }
 
-  .rating-picker {
-    display: grid;
-    grid-template-columns: repeat(11, 1fr);
-    gap: 4px;
-  }
-
+  .rating-picker { display: grid; grid-template-columns: repeat(11, 1fr); gap: 4px; }
   .rating-pick {
-    aspect-ratio: 1;
-    border-radius: 7px;
-    border: 1px solid var(--border);
-    background: var(--surface2);
-    color: var(--text-muted);
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 14px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.1s;
+    aspect-ratio: 1; border-radius: 7px; border: 1px solid var(--border);
+    background: var(--surface2); color: var(--text-muted);
+    font-family: 'Bebas Neue', sans-serif; font-size: 14px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: all 0.1s;
   }
-
-  .rating-pick.selected {
-    color: #fff;
-    border-color: transparent;
-    transform: scale(1.1);
-  }
-
-  .emoji-input {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .emoji-input .form-input { flex: 1; }
+  .rating-pick.selected { color: #fff; border-color: transparent; transform: scale(1.1); }
 
   .submit-btn {
-    width: 100%;
-    padding: 14px;
-    background: #fff;
-    color: #000;
-    border: none;
-    border-radius: 12px;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 18px;
-    letter-spacing: 2px;
-    cursor: pointer;
-    margin-top: 4px;
-    transition: opacity 0.15s;
+    width: 100%; padding: 14px; background: #fff; color: #000; border: none;
+    border-radius: 12px; font-family: 'Bebas Neue', sans-serif; font-size: 18px;
+    letter-spacing: 2px; cursor: pointer; margin-top: 4px; transition: opacity 0.15s;
   }
-
   .submit-btn:active { opacity: 0.8; }
+  .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-  /* ── FAB ── */
-  .fab {
-    position: fixed;
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 24px);
-    right: 20px;
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: #fff;
-    border: none;
-    color: #000;
-    font-size: 26px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 90;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-    transition: transform 0.15s;
-  }
-
-  .fab:active { transform: scale(0.92); }
-
-  /* ── RATING COLOR HELPERS ── */
-  .r0,.r1,.r2,.r3 { color: #c87a35; }
-  .r4,.r5,.r6 { color: #22a0a0; }
-  .r7,.r8,.r9 { color: #9066e0; }
-  .r10 { color: var(--c10); }
-
-  .rb0,.rb1,.rb2,.rb3 { background: #7a4f2e; }
-  .rb4,.rb5,.rb6 { background: #1a6b6b; }
-  .rb7,.rb8,.rb9 { background: #5b3fa8; }
-  .rb10 { background: var(--c10); }
-
-  .rp0,.rp1,.rp2,.rp3 { background: rgba(122,79,46,0.2); border-color: rgba(200,122,53,0.4); }
-  .rp4,.rp5,.rp6 { background: rgba(26,107,107,0.2); border-color: rgba(34,160,160,0.4); }
-  .rp7,.rp8,.rp9 { background: rgba(91,63,168,0.2); border-color: rgba(144,102,224,0.4); }
-  .rp10 { background: rgba(224,64,200,0.15); border-color: rgba(224,64,200,0.5); }
-
-  /* loading spinner */
-  .spinner {
-    width: 16px; height: 16px;
-    border: 2px solid var(--border);
-    border-top-color: var(--text-dim);
-    border-radius: 50%;
-    animation: spin 0.6s linear infinite;
-    display: inline-block;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* fade in for cards */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .album-card, .list-item {
-    animation: fadeUp 0.3s ease both;
-  }
-
-  .selected-cover-preview {
-    display: none;
-    align-items: center;
-    gap: 10px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 10px 12px;
-    margin-bottom: 14px;
-  }
-
-  .selected-cover-preview img {
-    width: 48px;
-    height: 48px;
-    border-radius: 6px;
-    object-fit: cover;
-  }
-
+  .selected-cover-preview { display: none; align-items: center; gap: 10px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; margin-bottom: 14px; }
+  .selected-cover-preview img { width: 48px; height: 48px; border-radius: 6px; object-fit: cover; }
   .scp-info { flex: 1; }
   .scp-title { font-size: 13px; font-weight: 600; }
   .scp-artist { font-size: 11px; color: var(--text-muted); }
+  .scp-clear { background: none; border: none; color: var(--text-muted); font-size: 18px; cursor: pointer; padding: 4px; }
 
-  .scp-clear {
-    background: none;
-    border: none;
-    color: var(--text-muted);
-    font-size: 18px;
-    cursor: pointer;
-    padding: 4px;
+  /* FAB */
+  .fab {
+    position: fixed; bottom: calc(env(safe-area-inset-bottom, 0px) + 24px); right: 20px;
+    width: 56px; height: 56px; border-radius: 50%; background: #fff; border: none;
+    color: #000; font-size: 26px; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; z-index: 90; box-shadow: 0 4px 20px rgba(0,0,0,0.5); transition: transform 0.15s;
   }
+  .fab:active { transform: scale(0.92); }
+
+  /* MISC */
+  .spinner { width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--text-dim); border-radius: 50%; animation: spin 0.6s linear infinite; display: inline-block; flex-shrink: 0; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .album-card, .list-item { animation: fadeUp 0.3s ease both; }
+
+  .fetch-banner { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text-muted); text-align: center; padding: 8px; letter-spacing: 0.5px; display: none; }
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="header-inner">
-    <div class="header-left">
-      <h1>365 ALBUMS</h1>
-      <div class="sub" id="headerSub">2026 LISTENING LOG</div>
-    </div>
-    <div class="progress-pill">
-      <div>
-        <div class="count" id="progressCount">0</div>
-        <div class="total">/ 365</div>
-      </div>
-      <div class="progress-ring-wrap">
-        <svg width="32" height="32" viewBox="0 0 32 32">
-          <circle class="ring-bg" cx="16" cy="16" r="13"/>
-          <circle class="ring-fill" cx="16" cy="16" r="13" id="ringFill"
-            stroke-dasharray="81.7"
-            stroke-dashoffset="81.7"/>
-        </svg>
-      </div>
-    </div>
-  </div>
-  <div class="nav-tabs">
-    <button class="nav-tab active" onclick="switchTab('wall')">🎵 WALL</button>
-    <button class="nav-tab" onclick="switchTab('list')">LIST</button>
-    <button class="nav-tab" onclick="switchTab('favs')">FAVS</button>
-    <button class="nav-tab" onclick="switchTab('stats')">STATS</button>
-  </div>
+<!-- LOGIN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-title">365<br>ALBUMS</div>
+  <div class="login-year">2026 LISTENING LOG</div>
+  <div class="login-desc">Connect Spotify once to pull album covers and search music.</div>
+  <button class="spotify-btn" onclick="spotifyLogin()">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+    Connect Spotify
+  </button>
 </div>
 
-<div class="main">
+<!-- APP -->
+<div id="appShell" style="display:none">
 
-  <!-- WALL TAB -->
-  <div id="tab-wall">
-    <div class="toolbar">
-      <button class="tool-btn active" onclick="setSort('date', this)">Latest</button>
-      <button class="tool-btn" onclick="setSort('rating-desc', this)">Top Rated</button>
-      <button class="tool-btn" onclick="setSort('rating-asc', this)">Lowest</button>
-      <button class="tool-btn" onclick="setSort('alpha', this)">A–Z</button>
+  <div class="header">
+    <div class="header-inner">
+      <div class="header-left">
+        <h1>365 ALBUMS</h1>
+        <div class="sub">2026 LISTENING LOG</div>
+      </div>
+      <div class="progress-pill">
+        <div>
+          <div class="count" id="progressCount">0</div>
+          <div class="total">/ 365</div>
+        </div>
+        <div class="progress-ring-wrap">
+          <svg width="32" height="32" viewBox="0 0 32 32">
+            <circle class="ring-bg" cx="16" cy="16" r="13"/>
+            <circle class="ring-fill" cx="16" cy="16" r="13" id="ringFill" stroke-dasharray="81.7" stroke-dashoffset="81.7"/>
+          </svg>
+        </div>
+      </div>
     </div>
-    <div class="album-grid" id="albumGrid"></div>
-  </div>
-
-  <!-- LIST TAB -->
-  <div id="tab-list" style="display:none">
-    <div class="toolbar">
-      <button class="tool-btn active" onclick="setListSort('date', this)">Latest</button>
-      <button class="tool-btn" onclick="setListSort('rating-desc', this)">Top Rated</button>
-      <button class="tool-btn" onclick="setListSort('alpha', this)">A–Z</button>
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="switchTab('wall')">🎵 WALL</button>
+      <button class="nav-tab" onclick="switchTab('list')">LIST</button>
+      <button class="nav-tab" onclick="switchTab('favs')">FAVS</button>
+      <button class="nav-tab" onclick="switchTab('stats')">STATS</button>
     </div>
-    <div class="album-list" id="albumList"></div>
   </div>
 
-  <!-- FAVS TAB -->
-  <div id="tab-favs" style="display:none">
-    <div class="crown-section" id="crownSection"></div>
-    <div class="section-title">FAVOURITES</div>
-    <div class="album-grid" id="favsGrid"></div>
+  <div class="main">
+    <div id="tab-wall">
+      <div class="toolbar">
+        <button class="tool-btn active" onclick="setSort('date',this)">Latest</button>
+        <button class="tool-btn" onclick="setSort('rating-desc',this)">Top Rated</button>
+        <button class="tool-btn" onclick="setSort('rating-asc',this)">Lowest</button>
+        <button class="tool-btn" onclick="setSort('alpha',this)">A–Z</button>
+      </div>
+      <div class="fetch-banner" id="fetchBanner"></div>
+      <div class="album-grid" id="albumGrid"></div>
+    </div>
+
+    <div id="tab-list" style="display:none">
+      <div class="toolbar">
+        <button class="tool-btn active" onclick="setListSort('date',this)">Latest</button>
+        <button class="tool-btn" onclick="setListSort('rating-desc',this)">Top Rated</button>
+        <button class="tool-btn" onclick="setListSort('alpha',this)">A–Z</button>
+      </div>
+      <div class="album-list" id="albumList"></div>
+    </div>
+
+    <div id="tab-favs" style="display:none">
+      <div class="crown-section" id="crownSection"></div>
+      <div class="section-title">FAVOURITES</div>
+      <div class="album-grid" id="favsGrid"></div>
+    </div>
+
+    <div id="tab-stats" style="display:none">
+      <div class="stats-grid" id="statsGrid"></div>
+    </div>
   </div>
 
-  <!-- STATS TAB -->
-  <div id="tab-stats" style="display:none">
-    <div class="stats-grid" id="statsGrid"></div>
-  </div>
-
+  <button class="fab" onclick="openAddModal()">+</button>
 </div>
 
-<!-- FAB -->
-<button class="fab" onclick="openAddModal()">+</button>
-
-<!-- ALBUM DETAIL MODAL -->
+<!-- DETAIL MODAL -->
 <div class="modal-overlay" id="detailOverlay" onclick="closeDetailIfBg(event)">
-  <div class="modal" id="detailModal">
+  <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-header" id="detailHeader"></div>
     <div class="modal-divider"></div>
@@ -1026,10 +466,10 @@
 
 <!-- ADD MODAL -->
 <div class="modal-overlay" id="addOverlay" onclick="closeAddIfBg(event)">
-  <div class="modal" id="addModal">
+  <div class="modal">
     <div class="modal-handle"></div>
     <div class="add-form">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;margin-bottom:16px;">ADD ALBUM</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;margin-bottom:16px;">LOG ALBUM</div>
 
       <div id="selectedPreview" class="selected-cover-preview">
         <img id="previewImg" src="" alt="">
@@ -1040,12 +480,12 @@
         <button class="scp-clear" onclick="clearSelection()">✕</button>
       </div>
 
-      <div class="form-group" id="searchGroup">
+      <div class="form-group">
         <label class="form-label">Search Album</label>
-        <input class="form-input" id="searchInput" placeholder="Type album or artist name..." autocomplete="off" oninput="handleSearch()">
+        <input class="form-input" id="searchInput" placeholder="Type album or artist..." autocomplete="off" oninput="handleSearch()">
         <div class="search-results" id="searchResults"></div>
-        <div id="manualGroup" style="margin-top:8px;display:none;gap:8px;flex-direction:column;">
-          <div style="font-size:11px;color:var(--text-muted);text-align:center;">Can't find it? Enter manually:</div>
+        <div id="manualGroup" style="display:none;flex-direction:column;gap:8px;margin-top:8px;">
+          <div style="font-size:11px;color:var(--text-muted);text-align:center;">Enter manually:</div>
           <div style="display:flex;gap:8px;">
             <input class="form-input" style="flex:1" id="manualTitle" placeholder="Album title" autocomplete="off">
             <input class="form-input" style="flex:1" id="manualArtist" placeholder="Artist" autocomplete="off">
@@ -1059,7 +499,7 @@
       </div>
 
       <div class="form-group">
-        <label class="form-label">Emoji (optional, for 10s)</label>
+        <label class="form-label">Emoji (10s only — optional)</label>
         <input class="form-input" id="emojiInput" placeholder="e.g. 🌈" maxlength="4" style="font-size:20px;width:80px;">
       </div>
 
@@ -1068,21 +508,26 @@
         <input class="form-input" id="notesInput" placeholder="Any thoughts...">
       </div>
 
-      <button class="submit-btn" onclick="submitAlbum()">LOG ALBUM</button>
-      <div style="height:10px;"></div>
+      <button class="submit-btn" id="submitBtn" onclick="submitAlbum()">LOG ALBUM</button>
+      <div style="height:10px"></div>
     </div>
   </div>
 </div>
 
 <script>
+// ── CONFIG ──
+const CLIENT_ID = '7cd46006a1c244378a1db5612a57a295';
+const REDIRECT_URI = window.location.origin + window.location.pathname;
+const SCOPES = 'user-read-private';
 const STORAGE_KEY = '365albums_data';
+const TOKEN_KEY = '365albums_token';
 
-// ── SEED DATA ──
+// ── SEED (titles + ratings only, covers fetched from Spotify) ──
 const seedAlbums = [
   {title:"BACK FOR MORE - Flight",artist:"Nothing",rating:4,emoji:"",notes:""},
   {title:"mysticspins vol1",artist:"808mystic",rating:4,emoji:"",notes:""},
   {title:"WONDERLOVE",artist:"Chase Shakur",rating:6,emoji:"",notes:""},
-  {title:"WONDERLOVE + (Deluxe)",artist:"Chase Shakur",rating:5,emoji:"",notes:""},
+  {title:"WONDERLOVE +",artist:"Chase Shakur",rating:5,emoji:"",notes:""},
   {title:"Year Of Reverse",artist:"Kaz Moon",rating:4,emoji:"",notes:""},
   {title:"SUPER SLIMEY",artist:"Future",rating:6,emoji:"",notes:""},
   {title:"NEVER ENOUGH",artist:"Daniel Caesar",rating:8,emoji:"",notes:""},
@@ -1103,7 +548,7 @@ const seedAlbums = [
   {title:"Currents",artist:"Tame Impala",rating:10,emoji:"💿",notes:""},
   {title:"K.I.D.S.",artist:"Mac Miller",rating:8,emoji:"",notes:""},
   {title:"Romance & Pandemonium",artist:"Tom The Mailman",rating:2,emoji:"",notes:""},
-  {title:"e.t.d.s. A Mixtape",artist:"IDK",rating:6,emoji:"",notes:""},
+  {title:"e.t.d.s.",artist:"IDK",rating:6,emoji:"",notes:""},
   {title:"Jump Out",artist:"OsamaSon",rating:2,emoji:"",notes:""},
   {title:"Son Of Spergy",artist:"Daniel Caesar",rating:5,emoji:"",notes:""},
   {title:"Octane",artist:"Don Toliver",rating:6,emoji:"",notes:""},
@@ -1115,10 +560,10 @@ const seedAlbums = [
   {title:"Piss In The Wind",artist:"Joji",rating:8,emoji:"",notes:""},
   {title:"The Fall Off",artist:"J. Cole",rating:8,emoji:"",notes:""},
   {title:"King Of The Mischievous South",artist:"Denzel Curry",rating:7,emoji:"",notes:""},
-  {title:"My Turn (Deluxe)",artist:"Lil Baby",rating:5,emoji:"",notes:""},
+  {title:"My Turn",artist:"Lil Baby",rating:5,emoji:"",notes:""},
   {title:"A Love Letter To You 3",artist:"Trippie Red",rating:6,emoji:"",notes:""},
   {title:"Camp",artist:"Childish Gambino",rating:9,emoji:"",notes:""},
-  {title:"Take Care (Deluxe)",artist:"Drake",rating:9,emoji:"",notes:""},
+  {title:"Take Care",artist:"Drake",rating:9,emoji:"",notes:""},
   {title:"DAMN.",artist:"Kendrick Lamar",rating:8,emoji:"",notes:""},
   {title:"2014 Forest Hills Drive",artist:"J. Cole",rating:8,emoji:"",notes:""},
   {title:"It's Us Vol. 1",artist:"Concrete Boys",rating:5,emoji:"",notes:""},
@@ -1129,7 +574,7 @@ const seedAlbums = [
   {title:"PLAYBOY",artist:"Tory Lanez",rating:6,emoji:"",notes:""},
   {title:"It's Us Vol. 2",artist:"Concrete Boys",rating:4,emoji:"",notes:""},
   {title:"The Romantic",artist:"Bruno Mars",rating:6,emoji:"",notes:""},
-  {title:"Born Sinner (Deluxe)",artist:"J. Cole",rating:6,emoji:"",notes:""},
+  {title:"Born Sinner",artist:"J. Cole",rating:6,emoji:"",notes:""},
   {title:"i am > i was",artist:"21 Savage",rating:8,emoji:"",notes:""},
   {title:"56 Nights",artist:"Future",rating:6,emoji:"",notes:""},
   {title:"In Rainbows",artist:"Radiohead",rating:10,emoji:"🌈",notes:""},
@@ -1158,109 +603,88 @@ const seedAlbums = [
   {title:"The Slim Shady LP",artist:"Eminem",rating:8,emoji:"",notes:""},
 ];
 
-// ── DEEZER JSONP ── works everywhere, zero CORS issues
-function deezerJSONP(url) {
-  return new Promise((resolve) => {
-    const cb = 'dz_' + Date.now() + '_' + Math.random().toString(36).slice(2);
-    const script = document.createElement('script');
-    const fullUrl = url + (url.includes('?') ? '&' : '?') + `output=jsonp&callback=${cb}`;
-    script.src = fullUrl;
-    window[cb] = (data) => {
-      delete window[cb];
-      if (document.body.contains(script)) document.body.removeChild(script);
-      resolve(data || {});
-    };
-    script.onerror = () => {
-      delete window[cb];
-      if (document.body.contains(script)) document.body.removeChild(script);
-      resolve({});
-    };
-    setTimeout(() => { if (window[cb]) window[cb]({}); }, 6000);
-    document.body.appendChild(script);
-  });
-}
-
-async function deezerSearch(query) {
-  const data = await deezerJSONP(`https://api.deezer.com/search/album?q=${encodeURIComponent(query)}&limit=8`);
-  return data.data || [];
-}
-
-async function deezerFetchCover(title, artist) {
-  const results = await deezerSearch(`${title} ${artist}`);
-  if (results.length > 0) {
-    const r = results[0];
-    return {
-      cover: r.cover_big || r.cover_medium || r.cover || '',
-      genre: r.genre_id ? '' : ''
-    };
-  }
-  return { cover: '', genre: '' };
-}
-
 // ── STATE ──
-let albums = [];
-let crownId = null;
-let currentSort = 'date';
-let currentListSort = 'date';
-let currentTab = 'wall';
-let selectedRating = null;
-let selectedAlbumData = null;
-let searchTimeout = null;
-let detailAlbumId = null;
+let albums = [], crownId = null;
+let currentSort = 'date', currentListSort = 'date', currentTab = 'wall';
+let selectedRating = null, selectedAlbumData = null, searchTimeout = null;
+let spotifyToken = null;
 
 // ── STORAGE ──
-function save() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({ albums, crownId }));
-}
-
+function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify({ albums, crownId })); }
 function load() {
-  const raw = localStorage.getItem(STORAGE_KEY);
-  if (raw) {
-    const d = JSON.parse(raw);
+  try {
+    const d = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
     albums = d.albums || [];
     crownId = d.crownId || null;
-  }
+  } catch(e) {}
 }
 
-// ── SEED LOAD ──
-async function initSeed() {
-  if (albums.length === 0) {
-    const now = Date.now();
-    // create all albums first so they show up instantly with placeholders
-    albums = seedAlbums.map((a, i) => ({
-      id: now - (seedAlbums.length - i) * 1000,
-      title: a.title,
-      artist: a.artist,
-      rating: a.rating,
-      emoji: a.emoji,
-      notes: a.notes,
-      cover: '',
-      genre: '',
-      fav: false,
-      dateAdded: now - (seedAlbums.length - i) * 1000
-    }));
-    save();
-    renderAll();
-    // fetch covers one by one via Deezer JSONP
-    for (let i = 0; i < albums.length; i++) {
-      const info = await deezerFetchCover(albums[i].title, albums[i].artist);
-      albums[i].cover = info.cover;
-      albums[i].genre = info.genre;
-      if (i % 4 === 0) { save(); renderAll(); }
-    }
-    save();
-    renderAll();
-  }
+// ── SPOTIFY PKCE ──
+async function sha256(plain) {
+  return crypto.subtle.digest('SHA-256', new TextEncoder().encode(plain));
 }
 
-// ── RATING COLOR ──
+function b64url(buf) {
+  return btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+}
+
+async function spotifyLogin() {
+  const verifier = b64url(crypto.getRandomValues(new Uint8Array(32)));
+  const challenge = b64url(await sha256(verifier));
+  localStorage.setItem('pkce_v', verifier);
+  const p = new URLSearchParams({ client_id: CLIENT_ID, response_type: 'code', redirect_uri: REDIRECT_URI, scope: SCOPES, code_challenge_method: 'S256', code_challenge: challenge });
+  window.location = 'https://accounts.spotify.com/authorize?' + p;
+}
+
+async function exchangeCode(code) {
+  const res = await fetch('https://accounts.spotify.com/api/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ client_id: CLIENT_ID, grant_type: 'authorization_code', code, redirect_uri: REDIRECT_URI, code_verifier: localStorage.getItem('pkce_v') }),
+  });
+  const d = await res.json();
+  if (d.access_token) {
+    localStorage.setItem(TOKEN_KEY, JSON.stringify({ token: d.access_token, expiry: Date.now() + d.expires_in * 1000 }));
+    localStorage.removeItem('pkce_v');
+    return d.access_token;
+  }
+  return null;
+}
+
+function getStoredToken() {
+  try {
+    const { token, expiry } = JSON.parse(localStorage.getItem(TOKEN_KEY) || '{}');
+    return Date.now() < expiry ? token : null;
+  } catch(e) { return null; }
+}
+
+// ── SPOTIFY API ──
+async function spotifySearch(q) {
+  if (!spotifyToken) return [];
+  try {
+    const res = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(q)}&type=album&limit=8`, { headers: { Authorization: `Bearer ${spotifyToken}` } });
+    if (res.status === 401) { localStorage.removeItem(TOKEN_KEY); spotifyToken = null; return []; }
+    const d = await res.json();
+    return d?.albums?.items || [];
+  } catch(e) { return []; }
+}
+
+async function spotifyFetchCover(title, artist) {
+  // try precise search first, then broader
+  let results = await spotifySearch(`album:${title} artist:${artist}`);
+  if (!results.length) results = await spotifySearch(`${title} ${artist}`);
+  if (!results.length) results = await spotifySearch(title);
+  const img = results[0]?.images?.[0]?.url || '';
+  return { cover: img, genre: '' };
+}
+
+// ── COLOR HELPERS ──
 function ratingColor(r) {
   if (r <= 3) return '#c87a35';
   if (r <= 6) return '#22a0a0';
   if (r <= 9) return '#9066e0';
   return 'var(--c10)';
 }
-
 function ratingBg(r) {
   if (r <= 3) return '#7a4f2e';
   if (r <= 6) return '#1a6b6b';
@@ -1278,483 +702,313 @@ function getSorted(arr, sort) {
   return a;
 }
 
-// ── RENDER WALL ──
+// ── RENDERS ──
 function renderWall() {
-  const grid = document.getElementById('albumGrid');
-  const sorted = getSorted(albums, currentSort);
-  grid.innerHTML = sorted.map((al, i) => {
-    const isTen = al.rating === 10;
-    const isCrown = al.id === crownId;
-    const isFav = al.fav;
-    return `
-      <div class="album-card ${isTen ? 'is-ten' : ''}" style="animation-delay:${Math.min(i,20)*0.03}s"
-           onclick="openDetail(${al.id})">
-        ${al.cover
-          ? `<img src="${al.cover}" alt="" loading="lazy" onerror="this.style.display='none'">`
-          : `<div class="cover-placeholder"><div class="ph-title">${al.title}</div><div class="ph-artist">${al.artist}</div></div>`
-        }
-        ${isTen && al.emoji ? `<div class="ten-emoji">${al.emoji}</div>` : ''}
-        ${isCrown ? `<div class="crown-badge">👑</div>` : ''}
-        ${isFav && !isCrown ? `<div class="fav-badge">♥</div>` : ''}
-        <div class="rating-badge rb${al.rating}" style="background:${ratingBg(al.rating)};color:#fff;">
-          ${al.rating}
-        </div>
-      </div>`;
-  }).join('');
+  document.getElementById('albumGrid').innerHTML = getSorted(albums, currentSort).map((al,i) => `
+    <div class="album-card ${al.rating===10?'is-ten':''}" style="animation-delay:${Math.min(i,20)*0.03}s" onclick="openDetail(${al.id})">
+      ${al.cover ? `<img src="${al.cover}" alt="" loading="lazy">` : `<div class="cover-placeholder"><div class="ph-title">${al.title}</div><div class="ph-artist">${al.artist}</div></div>`}
+      ${al.rating===10&&al.emoji?`<div class="ten-emoji">${al.emoji}</div>`:''}
+      ${al.id===crownId?`<div class="crown-badge">👑</div>`:''}
+      ${al.fav&&al.id!==crownId?`<div class="fav-badge">♥</div>`:''}
+      <div class="rating-badge" style="background:${ratingBg(al.rating)};color:#fff;">${al.rating}</div>
+    </div>`).join('');
 }
 
-// ── RENDER LIST ──
 function renderList() {
-  const list = document.getElementById('albumList');
-  const sorted = getSorted(albums, currentListSort);
-  list.innerHTML = sorted.map((al, i) => {
-    const isTen = al.rating === 10;
-    const isCrown = al.id === crownId;
-    return `
-      <div class="list-item ${isTen ? 'is-ten' : ''}" style="animation-delay:${Math.min(i,20)*0.02}s"
-           onclick="openDetail(${al.id})">
-        ${al.cover
-          ? `<img class="list-thumb" src="${al.cover}" alt="" loading="lazy" onerror="this.style.display='none'">`
-          : `<div class="list-thumb-placeholder">🎵</div>`
-        }
-        <div class="list-info">
-          <div class="list-title">${al.title}</div>
-          <div class="list-artist">${al.artist}</div>
-          ${al.genre ? `<div class="list-meta"><span class="genre-tag">${al.genre}</span></div>` : ''}
-        </div>
-        <div class="list-right">
-          <div class="list-rating" style="color:${ratingColor(al.rating)}">${al.rating}${al.emoji || ''}</div>
-          <div class="list-icons">
-            ${isCrown ? '👑' : ''}
-            ${al.fav ? '♥' : ''}
-          </div>
-        </div>
-      </div>`;
-  }).join('');
+  document.getElementById('albumList').innerHTML = getSorted(albums, currentListSort).map((al,i) => `
+    <div class="list-item ${al.rating===10?'is-ten':''}" style="animation-delay:${Math.min(i,20)*0.02}s" onclick="openDetail(${al.id})">
+      ${al.cover ? `<img class="list-thumb" src="${al.cover}" alt="" loading="lazy">` : `<div class="list-thumb-placeholder">🎵</div>`}
+      <div class="list-info">
+        <div class="list-title">${al.title}</div>
+        <div class="list-artist">${al.artist}</div>
+        ${al.genre?`<div class="list-meta"><span class="genre-tag">${al.genre}</span></div>`:''}
+      </div>
+      <div class="list-right">
+        <div class="list-rating" style="color:${ratingColor(al.rating)}">${al.rating}${al.emoji||''}</div>
+        <div class="list-icons">${al.id===crownId?'👑':''}${al.fav?'♥':''}</div>
+      </div>
+    </div>`).join('');
 }
 
-// ── RENDER FAVS ──
 function renderFavs() {
-  const crownSec = document.getElementById('crownSection');
-  const grid = document.getElementById('favsGrid');
   const crowned = crownId ? albums.find(a => a.id === crownId) : null;
-
-  if (crowned) {
-    crownSec.innerHTML = `
-      <div class="crown-card" onclick="openDetail(${crowned.id})">
-        <div class="crown-banner">
-          <span>👑</span><span>THE ONE</span>
+  document.getElementById('crownSection').innerHTML = crowned ? `
+    <div class="crown-card" onclick="openDetail(${crowned.id})">
+      <div class="crown-banner"><span>👑</span><span>THE ONE</span></div>
+      <div class="crown-content">
+        ${crowned.cover?`<img class="crown-cover" src="${crowned.cover}" alt="">`:`<div class="crown-cover-placeholder">🎵</div>`}
+        <div class="crown-info">
+          <div class="crown-album-title">${crowned.title}</div>
+          <div class="crown-artist">${crowned.artist}</div>
+          <div class="crown-rating" style="color:${ratingColor(crowned.rating)}">${crowned.rating}${crowned.emoji||''}</div>
         </div>
-        <div class="crown-content">
-          ${crowned.cover
-            ? `<img class="crown-cover" src="${crowned.cover}" alt="">`
-            : `<div class="crown-cover-placeholder">🎵</div>`}
-          <div class="crown-info">
-            <div class="crown-album-title">${crowned.title}</div>
-            <div class="crown-artist">${crowned.artist}</div>
-            <div class="crown-rating" style="color:${ratingColor(crowned.rating)}">${crowned.rating}${crowned.emoji||''}</div>
-          </div>
-        </div>
-      </div>`;
-  } else {
-    crownSec.innerHTML = `
-      <div class="crown-card" style="border-color:var(--border);box-shadow:none;">
-        <div class="crown-content">
-          <div class="crown-cover-placeholder" style="opacity:0.3;">👑</div>
-          <div class="crown-info">
-            <div class="crown-album-title" style="color:var(--text-muted)">No Crown Yet</div>
-            <div class="crown-artist" style="color:var(--text-muted);font-size:11px;">Open an album and crown your #1</div>
-          </div>
-        </div>
-      </div>`;
-  }
-
-  const favs = albums.filter(a => a.fav);
-  if (favs.length === 0) {
-    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="big">♥</div>Open any album and mark it as a favourite</div>`;
-  } else {
-    grid.innerHTML = favs.map((al, i) => {
-      const isTen = al.rating === 10;
-      return `
-        <div class="album-card ${isTen ? 'is-ten' : ''}" style="animation-delay:${i*0.03}s"
-             onclick="openDetail(${al.id})">
-          ${al.cover
-            ? `<img src="${al.cover}" alt="" loading="lazy">`
-            : `<div class="cover-placeholder"><div class="ph-title">${al.title}</div><div class="ph-artist">${al.artist}</div></div>`}
-          ${isTen && al.emoji ? `<div class="ten-emoji">${al.emoji}</div>` : ''}
-          <div class="rating-badge" style="background:${ratingBg(al.rating)};color:#fff;">${al.rating}</div>
-        </div>`;
-    }).join('');
-  }
-}
-
-// ── RENDER STATS ──
-function renderStats() {
-  const grid = document.getElementById('statsGrid');
-  if (albums.length === 0) { grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1">No albums logged yet.</div>'; return; }
-
-  const avg = (albums.reduce((s,a) => s+a.rating, 0) / albums.length).toFixed(1);
-  const top = [...albums].sort((a,b) => b.rating - a.rating)[0];
-  const tens = albums.filter(a => a.rating === 10);
-
-  const tierCounts = {};
-  ['0-3','4-6','7-9','10'].forEach(k => tierCounts[k] = 0);
-  albums.forEach(a => {
-    if (a.rating <= 3) tierCounts['0-3']++;
-    else if (a.rating <= 6) tierCounts['4-6']++;
-    else if (a.rating <= 9) tierCounts['7-9']++;
-    else tierCounts['10']++;
-  });
-
-  const artistCount = {};
-  albums.forEach(a => { artistCount[a.artist] = (artistCount[a.artist]||0)+1; });
-  const topArtists = Object.entries(artistCount).sort((a,b)=>b[1]-a[1]).slice(0,5);
-
-  const tierColors = { '0-3':'#c87a35','4-6':'#22a0a0','7-9':'#9066e0','10':'var(--c10)' };
-
-  grid.innerHTML = `
-    <div class="stat-card">
-      <div class="stat-label">Logged</div>
-      <div class="stat-value">${albums.length}</div>
-      <div class="stat-sub">${(albums.length/365*100).toFixed(1)}% of 365</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Avg Rating</div>
-      <div class="stat-value" style="color:${ratingColor(Math.round(parseFloat(avg)))}">${avg}</div>
-      <div class="stat-sub">out of 10</div>
-    </div>
-    <div class="stat-card wide">
-      <div class="stat-label">Tier Breakdown</div>
-      <div class="tier-bars">
-        ${Object.entries(tierCounts).map(([k,v]) => `
-          <div class="tier-row">
-            <div class="tier-label">${k}</div>
-            <div class="tier-bar-wrap">
-              <div class="tier-bar-fill" style="width:${albums.length ? v/albums.length*100 : 0}%;background:${tierColors[k]}"></div>
-            </div>
-            <div class="tier-count">${v}</div>
-          </div>`).join('')}
       </div>
-    </div>
-    ${tens.length > 0 ? `
-    <div class="stat-card wide">
-      <div class="stat-label">Masterpieces 🎖</div>
-      <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;">
-        ${tens.map(a => `
-          <div style="display:flex;align-items:center;gap:8px;background:rgba(224,64,200,0.1);border:1px solid rgba(224,64,200,0.3);border-radius:10px;padding:7px 10px;flex:1;min-width:140px;cursor:pointer;" onclick="openDetail(${a.id})">
-            ${a.cover ? `<img src="${a.cover}" style="width:36px;height:36px;border-radius:5px;object-fit:cover;" alt="">` : '<div style="width:36px;height:36px;border-radius:5px;background:var(--surface3);display:flex;align-items:center;justify-content:center;">🎵</div>'}
-            <div>
-              <div style="font-size:11px;font-weight:600;">${a.title} ${a.emoji}</div>
-              <div style="font-size:10px;color:var(--text-muted);">${a.artist}</div>
-            </div>
-          </div>`).join('')}
-      </div>
-    </div>` : ''}
-    <div class="stat-card wide">
-      <div class="stat-label">Most Listened Artists</div>
-      <div class="top-artists">
-        ${topArtists.map(([name,count]) => `
-          <div class="artist-row">
-            <div class="artist-name">${name}</div>
-            <div class="artist-count">${count} album${count>1?'s':''}</div>
-          </div>`).join('')}
+    </div>` : `
+    <div class="crown-card" style="border-color:var(--border);box-shadow:none;cursor:default;">
+      <div class="crown-content">
+        <div class="crown-cover-placeholder" style="opacity:0.3;">👑</div>
+        <div class="crown-info">
+          <div class="crown-album-title" style="color:var(--text-muted)">No Crown Yet</div>
+          <div class="crown-artist" style="font-size:11px;color:var(--text-muted)">Open an album and crown your #1</div>
+        </div>
       </div>
     </div>`;
+
+  const favs = albums.filter(a => a.fav);
+  document.getElementById('favsGrid').innerHTML = !favs.length
+    ? `<div class="empty-state"><div class="big">♥</div>Open any album and mark it as a favourite</div>`
+    : favs.map((al,i) => `
+      <div class="album-card ${al.rating===10?'is-ten':''}" style="animation-delay:${i*0.03}s" onclick="openDetail(${al.id})">
+        ${al.cover?`<img src="${al.cover}" alt="" loading="lazy">`:`<div class="cover-placeholder"><div class="ph-title">${al.title}</div><div class="ph-artist">${al.artist}</div></div>`}
+        ${al.rating===10&&al.emoji?`<div class="ten-emoji">${al.emoji}</div>`:''}
+        <div class="rating-badge" style="background:${ratingBg(al.rating)};color:#fff;">${al.rating}</div>
+      </div>`).join('');
 }
 
-// ── RENDER ALL ──
+function renderStats() {
+  const grid = document.getElementById('statsGrid');
+  if (!albums.length) { grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1">No albums yet.</div>'; return; }
+  const avg = (albums.reduce((s,a)=>s+a.rating,0)/albums.length).toFixed(1);
+  const tens = albums.filter(a=>a.rating===10);
+  const tc = {'0–3':0,'4–6':0,'7–9':0,'10':0};
+  albums.forEach(a => { if(a.rating<=3) tc['0–3']++; else if(a.rating<=6) tc['4–6']++; else if(a.rating<=9) tc['7–9']++; else tc['10']++; });
+  const tcol = {'0–3':'#c87a35','4–6':'#22a0a0','7–9':'#9066e0','10':'var(--c10)'};
+  const ac = {};
+  albums.forEach(a => { ac[a.artist]=(ac[a.artist]||0)+1; });
+  const topArtists = Object.entries(ac).sort((a,b)=>b[1]-a[1]).slice(0,5);
+
+  grid.innerHTML = `
+    <div class="stat-card"><div class="stat-label">Logged</div><div class="stat-value">${albums.length}</div><div class="stat-sub">${(albums.length/365*100).toFixed(1)}% of 365</div></div>
+    <div class="stat-card"><div class="stat-label">Avg Rating</div><div class="stat-value" style="color:${ratingColor(Math.round(parseFloat(avg)))}">${avg}</div><div class="stat-sub">out of 10</div></div>
+    <div class="stat-card wide"><div class="stat-label">Tier Breakdown</div><div class="tier-bars">
+      ${Object.entries(tc).map(([k,v])=>`<div class="tier-row"><div class="tier-label">${k}</div><div class="tier-bar-wrap"><div class="tier-bar-fill" style="width:${albums.length?v/albums.length*100:0}%;background:${tcol[k]}"></div></div><div class="tier-count">${v}</div></div>`).join('')}
+    </div></div>
+    ${tens.length?`<div class="stat-card wide"><div class="stat-label">Masterpieces 🎖</div><div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;">
+      ${tens.map(a=>`<div style="display:flex;align-items:center;gap:8px;background:rgba(224,64,200,0.1);border:1px solid rgba(224,64,200,0.3);border-radius:10px;padding:7px 10px;flex:1;min-width:140px;cursor:pointer;" onclick="openDetail(${a.id})">
+        ${a.cover?`<img src="${a.cover}" style="width:36px;height:36px;border-radius:5px;object-fit:cover;" alt="">`:'<div style="width:36px;height:36px;border-radius:5px;background:var(--surface3);display:flex;align-items:center;justify-content:center;">🎵</div>'}
+        <div><div style="font-size:11px;font-weight:600;">${a.title} ${a.emoji}</div><div style="font-size:10px;color:var(--text-muted)">${a.artist}</div></div>
+      </div>`).join('')}
+    </div></div>`:''}
+    <div class="stat-card wide"><div class="stat-label">Most Listened Artists</div><div class="top-artists">
+      ${topArtists.map(([n,c])=>`<div class="artist-row"><div class="artist-name">${n}</div><div class="artist-count">${c} album${c>1?'s':''}</div></div>`).join('')}
+    </div></div>`;
+}
+
 function renderAll() {
-  updateProgress();
-  if (currentTab === 'wall') renderWall();
-  else if (currentTab === 'list') renderList();
-  else if (currentTab === 'favs') renderFavs();
+  document.getElementById('progressCount').textContent = albums.length;
+  document.getElementById('ringFill').style.strokeDashoffset = 81.7 - (albums.length/365)*81.7;
+  if (currentTab==='wall') renderWall();
+  else if (currentTab==='list') renderList();
+  else if (currentTab==='favs') renderFavs();
   else renderStats();
 }
 
-function updateProgress() {
-  const n = albums.length;
-  document.getElementById('progressCount').textContent = n;
-  const pct = n / 365;
-  const circ = 81.7;
-  document.getElementById('ringFill').style.strokeDashoffset = circ - pct * circ;
-}
-
-// ── TABS ──
+// ── TABS / SORT ──
 function switchTab(tab) {
   currentTab = tab;
-  ['wall','list','favs','stats'].forEach(t => {
-    document.getElementById('tab-'+t).style.display = t === tab ? '' : 'none';
-  });
-  document.querySelectorAll('.nav-tab').forEach((btn, i) => {
-    btn.classList.toggle('active', ['wall','list','favs','stats'][i] === tab);
-  });
+  ['wall','list','favs','stats'].forEach(t => document.getElementById('tab-'+t).style.display = t===tab?'':'none');
+  document.querySelectorAll('.nav-tab').forEach((b,i) => b.classList.toggle('active', ['wall','list','favs','stats'][i]===tab));
   renderAll();
 }
 
-// ── SORT BUTTONS ──
-function setSort(s, btn) {
-  currentSort = s;
-  document.querySelectorAll('#tab-wall .tool-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderWall();
-}
-
-function setListSort(s, btn) {
-  currentListSort = s;
-  document.querySelectorAll('#tab-list .tool-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderList();
-}
+function setSort(s,btn) { currentSort=s; document.querySelectorAll('#tab-wall .tool-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderWall(); }
+function setListSort(s,btn) { currentListSort=s; document.querySelectorAll('#tab-list .tool-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderList(); }
 
 // ── DETAIL MODAL ──
 function openDetail(id) {
-  const al = albums.find(a => a.id === id);
+  const al = albums.find(a=>a.id===id);
   if (!al) return;
-  detailAlbumId = id;
-
-  const isTen = al.rating === 10;
-  const isCrown = al.id === crownId;
-
   document.getElementById('detailHeader').innerHTML = `
-    ${al.cover
-      ? `<img class="modal-cover" src="${al.cover}" alt="">`
-      : `<div class="modal-cover-placeholder">🎵</div>`}
+    ${al.cover?`<img class="modal-cover" src="${al.cover}" alt="">`:`<div class="modal-cover-placeholder">🎵</div>`}
     <div class="modal-info">
       <div class="modal-album">${al.title}</div>
       <div class="modal-artist">${al.artist}</div>
       <div class="modal-rating" style="color:${ratingColor(al.rating)}">${al.rating}/10</div>
-      ${al.genre ? `<div class="modal-genre">${al.genre}</div>` : ''}
-      ${isTen && al.emoji ? `<div class="modal-ten-emoji">${al.emoji}</div>` : ''}
-      ${al.notes ? `<div style="font-size:12px;color:var(--text-dim);margin-top:6px;font-style:italic;">${al.notes}</div>` : ''}
+      ${al.genre?`<div class="modal-genre">${al.genre}</div>`:''}
+      ${al.rating===10&&al.emoji?`<div style="font-size:22px;margin-top:4px;">${al.emoji}</div>`:''}
+      ${al.notes?`<div style="font-size:12px;color:var(--text-dim);margin-top:6px;font-style:italic;">${al.notes}</div>`:''}
     </div>`;
-
   document.getElementById('detailActions').innerHTML = `
-    <button class="action-btn fav-btn" onclick="toggleFav(${id})">
-      ${al.fav ? '♥ Unfavourite' : '♡ Favourite'}
-    </button>
-    <button class="action-btn crown-btn" onclick="setCrown(${id})">
-      ${isCrown ? '👑 Uncrown' : '👑 Crown This'}
-    </button>
+    <button class="action-btn fav-btn" onclick="toggleFav(${id})">${al.fav?'♥ Unfavourite':'♡ Favourite'}</button>
+    <button class="action-btn crown-btn" onclick="setCrown(${id})">${al.id===crownId?'👑 Uncrown':'👑 Crown This'}</button>
     <button class="action-btn danger" onclick="confirmDelete(${id})">🗑 Remove</button>`;
-
   document.getElementById('detailOverlay').classList.add('open');
 }
 
-function closeDetailIfBg(e) {
-  if (e.target === document.getElementById('detailOverlay')) closeDetail();
-}
-function closeDetail() {
-  document.getElementById('detailOverlay').classList.remove('open');
-  detailAlbumId = null;
-}
-
-function toggleFav(id) {
-  const al = albums.find(a => a.id === id);
-  if (!al) return;
-  al.fav = !al.fav;
-  save();
-  closeDetail();
-  renderAll();
-}
-
-function setCrown(id) {
-  crownId = crownId === id ? null : id;
-  save();
-  closeDetail();
-  renderAll();
-}
+function closeDetailIfBg(e) { if (e.target===document.getElementById('detailOverlay')) closeDetail(); }
+function closeDetail() { document.getElementById('detailOverlay').classList.remove('open'); }
 
 function confirmDelete(id) {
   document.getElementById('detailActions').innerHTML = `
     <div style="width:100%;text-align:center;padding:4px 0;">
       <div style="font-size:13px;color:var(--text-dim);margin-bottom:10px;">Remove this album?</div>
       <div style="display:flex;gap:8px;">
-        <button class="action-btn" onclick="openDetail(${id})" style="flex:1;">Cancel</button>
-        <button class="action-btn danger" onclick="deleteAlbum(${id})" style="flex:1;background:#2a1a1a;border-color:#c84040;color:#ff6060;">Yes, remove</button>
+        <button class="action-btn" onclick="openDetail(${id})" style="flex:1">Cancel</button>
+        <button class="action-btn danger" onclick="deleteAlbum(${id})" style="flex:1">Yes, remove</button>
       </div>
     </div>`;
 }
 
-function deleteAlbum(id) {
-  albums = albums.filter(a => a.id !== id);
-  if (crownId === id) crownId = null;
-  save();
-  closeDetail();
-  renderAll();
-}
+function deleteAlbum(id) { albums=albums.filter(a=>a.id!==id); if(crownId===id) crownId=null; save(); closeDetail(); renderAll(); }
+function toggleFav(id) { const al=albums.find(a=>a.id===id); if(!al) return; al.fav=!al.fav; save(); closeDetail(); renderAll(); }
+function setCrown(id) { crownId=crownId===id?null:id; save(); closeDetail(); renderAll(); }
 
 // ── ADD MODAL ──
-function showManual() {
-  document.getElementById('searchResults').style.display = 'none';
-  const mg = document.getElementById('manualGroup');
-  mg.style.display = 'flex';
-}
-
 function openAddModal() {
-  selectedAlbumData = null;
-  selectedRating = null;
-  document.getElementById('searchInput').value = '';
-  document.getElementById('manualTitle').value = '';
-  document.getElementById('manualArtist').value = '';
-  document.getElementById('emojiInput').value = '';
-  document.getElementById('notesInput').value = '';
-  document.getElementById('searchResults').style.display = 'none';
-  document.getElementById('selectedPreview').style.display = 'none';
-  document.getElementById('manualGroup').style.display = 'none';
+  selectedAlbumData=null; selectedRating=null;
+  ['searchInput','manualTitle','manualArtist','emojiInput','notesInput'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('searchResults').style.display='none';
+  document.getElementById('selectedPreview').style.display='none';
+  document.getElementById('manualGroup').style.display='none';
   buildRatingPicker();
   document.getElementById('addOverlay').classList.add('open');
 }
 
-function closeAddIfBg(e) {
-  if (e.target === document.getElementById('addOverlay')) closeAdd();
-}
-function closeAdd() {
-  document.getElementById('addOverlay').classList.remove('open');
-}
+function closeAddIfBg(e) { if(e.target===document.getElementById('addOverlay')) closeAdd(); }
+function closeAdd() { document.getElementById('addOverlay').classList.remove('open'); }
 
 function buildRatingPicker() {
-  const picker = document.getElementById('ratingPicker');
-  picker.innerHTML = Array.from({length:11},(_,i) => `
-    <div class="rating-pick ${selectedRating===i?'selected rb'+i:''}"
-         style="${selectedRating===i?'background:'+ratingBg(i)+';color:#fff;border-color:transparent':''}"
-         onclick="pickRating(${i})">${i}</div>
-  `).join('');
+  document.getElementById('ratingPicker').innerHTML = Array.from({length:11},(_,i)=>`
+    <div class="rating-pick ${selectedRating===i?'selected':''}" style="${selectedRating===i?`background:${ratingBg(i)};color:#fff;border-color:transparent`:''}" onclick="pickRating(${i})">${i}</div>`).join('');
 }
 
-function pickRating(n) {
-  selectedRating = n;
-  buildRatingPicker();
-}
+function pickRating(n) { selectedRating=n; buildRatingPicker(); }
 
-let searchController = null;
 function handleSearch() {
   clearTimeout(searchTimeout);
   const q = document.getElementById('searchInput').value.trim();
-  if (q.length < 2) { document.getElementById('searchResults').style.display = 'none'; return; }
+  if (q.length < 2) { document.getElementById('searchResults').style.display='none'; return; }
   searchTimeout = setTimeout(() => doSearch(q), 400);
 }
 
 async function doSearch(q) {
-  const resultsEl = document.getElementById('searchResults');
-  resultsEl.style.display = 'block';
-  resultsEl.innerHTML = `<div style="padding:10px 12px;color:var(--text-muted);font-size:12px;display:flex;align-items:center;gap:8px;"><span class="spinner"></span> Searching...</div>`;
-
-  const results = await deezerSearch(q);
-
+  const el = document.getElementById('searchResults');
+  el.style.display = 'block';
+  el.innerHTML = `<div style="padding:10px 12px;color:var(--text-muted);font-size:12px;display:flex;align-items:center;gap:8px;"><span class="spinner"></span> Searching...</div>`;
+  const results = await spotifySearch(q);
   if (!results.length) {
-    resultsEl.innerHTML = `<div style="padding:10px 12px;color:var(--text-muted);font-size:12px;">No results — <span style="color:#fff;cursor:pointer;" onclick="showManual()">enter manually →</span></div>`;
+    el.innerHTML = `<div style="padding:10px 12px;color:var(--text-muted);font-size:12px;">No results — <span style="color:#fff;cursor:pointer;" onclick="showManual()">enter manually →</span></div>`;
     return;
   }
-
-  resultsEl.innerHTML = results.slice(0, 6).map((r, i) => {
-    const img = r.cover_medium || r.cover || '';
-    const title = r.title || '';
-    const artist = r.artist?.name || '';
+  window._sr = results;
+  el.innerHTML = results.slice(0,6).map((r,i) => {
+    const img = r.images?.[1]?.url || r.images?.[0]?.url || '';
+    const artist = r.artists?.map(a=>a.name).join(', ') || '';
     return `<div class="search-result-item" onclick="selectResult(${i})">
-      ${img ? `<img class="sr-thumb" src="${img}" alt="">` : `<div class="sr-thumb" style="display:flex;align-items:center;justify-content:center;font-size:16px;">🎵</div>`}
-      <div class="sr-info">
-        <div class="sr-title">${title}</div>
-        <div class="sr-artist">${artist}</div>
-      </div>
+      ${img?`<img class="sr-thumb" src="${img}" alt="">`:`<div class="sr-thumb" style="display:flex;align-items:center;justify-content:center;">🎵</div>`}
+      <div class="sr-info"><div class="sr-title">${r.name}</div><div class="sr-artist">${artist}</div></div>
     </div>`;
   }).join('') + `<div class="search-result-item" onclick="showManual()" style="justify-content:center;color:var(--text-muted);font-size:11px;">Can't find it? Enter manually →</div>`;
-
-  window._searchResults = results;
 }
 
 function selectResult(i) {
-  const r = window._searchResults[i];
-  const img = r.cover_big || r.cover_medium || r.cover || '';
-  const title = r.title || r.collectionName || '';
-  const artist = r.artist?.name || r.artistName || '';
-
-  selectedAlbumData = { title, artist, cover: img, genre: '' };
-
+  const r = window._sr[i];
+  const img = r.images?.[0]?.url || '';
+  const artist = r.artists?.map(a=>a.name).join(', ') || '';
+  selectedAlbumData = { title: r.name, artist, cover: img, genre: '' };
   document.getElementById('searchResults').style.display = 'none';
   document.getElementById('searchInput').value = '';
-
-  const preview = document.getElementById('selectedPreview');
-  preview.style.display = 'flex';
-  document.getElementById('previewTitle').textContent = title;
+  const prev = document.getElementById('selectedPreview');
+  prev.style.display = 'flex';
+  document.getElementById('previewTitle').textContent = r.name;
   document.getElementById('previewArtist').textContent = artist;
-  const previewImg = document.getElementById('previewImg');
-  if (img) { previewImg.src = img; previewImg.style.display = 'block'; }
-  else previewImg.style.display = 'none';
+  const pi = document.getElementById('previewImg');
+  pi.style.display = img ? 'block' : 'none';
+  if (img) pi.src = img;
 }
 
-function clearSelection() {
-  selectedAlbumData = null;
-  document.getElementById('selectedPreview').style.display = 'none';
-  document.getElementById('previewImg').style.display = 'block';
-}
+function showManual() { document.getElementById('searchResults').style.display='none'; document.getElementById('manualGroup').style.display='flex'; }
+function clearSelection() { selectedAlbumData=null; document.getElementById('selectedPreview').style.display='none'; }
 
 async function submitAlbum() {
-  if (selectedRating === null) { alert('Pick a rating first'); return; }
-
-  let title, artist, cover, genre = '';
-
+  if (selectedRating===null) { alert('Pick a rating'); return; }
+  const btn = document.getElementById('submitBtn');
+  btn.disabled=true; btn.textContent='SAVING...';
+  let title, artist, cover='', genre='';
   if (selectedAlbumData) {
-    title = selectedAlbumData.title;
-    artist = selectedAlbumData.artist;
-    cover = selectedAlbumData.cover;
-    genre = selectedAlbumData.genre || '';
-    if (!cover) {
-      const info = await fetchCover(title, artist);
-      cover = info.cover;
-      genre = genre || info.genre;
-    }
+    ({ title, artist, cover, genre } = selectedAlbumData);
   } else {
     title = document.getElementById('manualTitle').value.trim();
     artist = document.getElementById('manualArtist').value.trim();
-    if (!title || !artist) { alert('Enter album title and artist'); return; }
-    const info = await deezerFetchCover(title, artist);
+    if (!title||!artist) { btn.disabled=false; btn.textContent='LOG ALBUM'; alert('Enter title and artist'); return; }
+    const info = await spotifyFetchCover(title, artist);
     cover = info.cover;
-    genre = info.genre;
   }
-
   const emoji = document.getElementById('emojiInput').value.trim();
   const notes = document.getElementById('notesInput').value.trim();
-
-  const album = {
-    id: Date.now(),
-    title, artist, rating: selectedRating,
-    emoji: selectedRating === 10 ? emoji : '',
-    notes, cover, genre,
-    fav: false,
-    dateAdded: Date.now()
-  };
-
-  albums.push(album);
+  albums.push({ id: Date.now(), title, artist, rating: selectedRating, emoji: selectedRating===10?emoji:'', notes, cover, genre, fav: false, dateAdded: Date.now() });
   save();
+  btn.disabled=false; btn.textContent='LOG ALBUM';
   closeAdd();
-  renderAll();
-
-  // switch to wall to see it
   switchTab('wall');
 }
 
-// ── INIT ──
-load();
-renderAll();
-if (albums.length === 0) {
-  initSeed();
-} else {
-  updateProgress();
-  const missing = albums.filter(a => !a.cover);
-  if (missing.length > 0) {
-    (async () => {
-      for (let i = 0; i < albums.length; i++) {
+// ── SEED INIT ──
+async function initSeed() {
+  const now = Date.now();
+  albums = seedAlbums.map((a,i) => ({
+    id: now-(seedAlbums.length-i)*1000,
+    title:a.title, artist:a.artist, rating:a.rating, emoji:a.emoji, notes:a.notes,
+    cover:'', genre:'', fav:false, dateAdded:now-(seedAlbums.length-i)*1000
+  }));
+  save(); renderAll();
+  const banner = document.getElementById('fetchBanner');
+  banner.style.display = 'block';
+  for (let i=0; i<albums.length; i++) {
+    banner.textContent = `Fetching covers from Spotify... ${i+1}/${albums.length}`;
+    const info = await spotifyFetchCover(albums[i].title, albums[i].artist);
+    albums[i].cover = info.cover;
+    if (i%5===0) { save(); renderAll(); }
+  }
+  save(); renderAll();
+  banner.style.display = 'none';
+}
+
+// ── BOOT ──
+async function boot() {
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get('code');
+  if (code) {
+    window.history.replaceState({}, '', window.location.pathname);
+    spotifyToken = await exchangeCode(code);
+  } else {
+    spotifyToken = getStoredToken();
+  }
+
+  if (!spotifyToken) {
+    document.getElementById('loginScreen').style.display = 'flex';
+    return;
+  }
+
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('appShell').style.display = 'block';
+
+  load();
+  renderAll();
+
+  if (albums.length === 0) {
+    await initSeed();
+  } else {
+    const missing = albums.filter(a => !a.cover);
+    if (missing.length > 0) {
+      const banner = document.getElementById('fetchBanner');
+      banner.style.display = 'block';
+      let done = 0;
+      for (let i=0; i<albums.length; i++) {
         if (!albums[i].cover) {
-          const info = await deezerFetchCover(albums[i].title, albums[i].artist);
+          banner.textContent = `Fetching missing covers... ${++done}/${missing.length}`;
+          const info = await spotifyFetchCover(albums[i].title, albums[i].artist);
           albums[i].cover = info.cover;
-          if (!albums[i].genre && info.genre) albums[i].genre = info.genre;
-          if (i % 4 === 0) { save(); renderAll(); }
+          if (done%5===0) { save(); renderAll(); }
         }
       }
       save(); renderAll();
-    })();
+      banner.style.display = 'none';
+    }
   }
 }
+
+boot();
 </script>
 </body>
 </html>
