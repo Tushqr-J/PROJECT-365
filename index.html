@@ -1075,7 +1075,6 @@
 </div>
 
 <script>
-const LASTFM_KEY = '143422e91c33659c9bcebe07ab65c125';
 const STORAGE_KEY = '365albums_data';
 
 // ── SEED DATA ──
@@ -1159,6 +1158,45 @@ const seedAlbums = [
   {title:"The Slim Shady LP",artist:"Eminem",rating:8,emoji:"",notes:""},
 ];
 
+// ── DEEZER JSONP ── works everywhere, zero CORS issues
+function deezerJSONP(url) {
+  return new Promise((resolve) => {
+    const cb = 'dz_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+    const script = document.createElement('script');
+    const fullUrl = url + (url.includes('?') ? '&' : '?') + `output=jsonp&callback=${cb}`;
+    script.src = fullUrl;
+    window[cb] = (data) => {
+      delete window[cb];
+      if (document.body.contains(script)) document.body.removeChild(script);
+      resolve(data || {});
+    };
+    script.onerror = () => {
+      delete window[cb];
+      if (document.body.contains(script)) document.body.removeChild(script);
+      resolve({});
+    };
+    setTimeout(() => { if (window[cb]) window[cb]({}); }, 6000);
+    document.body.appendChild(script);
+  });
+}
+
+async function deezerSearch(query) {
+  const data = await deezerJSONP(`https://api.deezer.com/search/album?q=${encodeURIComponent(query)}&limit=8`);
+  return data.data || [];
+}
+
+async function deezerFetchCover(title, artist) {
+  const results = await deezerSearch(`${title} ${artist}`);
+  if (results.length > 0) {
+    const r = results[0];
+    return {
+      cover: r.cover_big || r.cover_medium || r.cover || '',
+      genre: r.genre_id ? '' : ''
+    };
+  }
+  return { cover: '', genre: '' };
+}
+
 // ── STATE ──
 let albums = [];
 let crownId = null;
@@ -1184,50 +1222,11 @@ function load() {
   }
 }
 
-// ── ITUNES API (CORS-friendly, no key needed) ──
-async function fetchCover(title, artist) {
-  try {
-    const q = encodeURIComponent(`${title} ${artist}`);
-    const url = `https://itunes.apple.com/search?term=${q}&media=music&entity=album&limit=5`;
-    const res = await fetch(url);
-    const data = await res.json();
-    const results = data?.results || [];
-    for (const r of results) {
-      if (r.artworkUrl100) {
-        return { cover: r.artworkUrl100.replace('100x100bb', '600x600bb'), genre: r.primaryGenreName || '' };
-      }
-    }
-  } catch(e) {}
-  return { cover: '', genre: '' };
-}
-
-async function searchITunes(query) {
-  const q = encodeURIComponent(query);
-  const url = `https://itunes.apple.com/search?term=${q}&media=music&entity=album&limit=8`;
-  const res = await fetch(url);
-  const data = await res.json();
-  return data?.results || [];
-}
-
-async function getAlbumInfo(title, artist) {
-  try {
-    const q = encodeURIComponent(`${title} ${artist}`);
-    const url = `https://itunes.apple.com/search?term=${q}&media=music&entity=album&limit=3`;
-    const res = await fetch(url);
-    const data = await res.json();
-    const r = data?.results?.[0];
-    if (!r) return { genre: '', cover: '' };
-    return {
-      genre: r.primaryGenreName || '',
-      cover: r.artworkUrl100 ? r.artworkUrl100.replace('100x100bb', '600x600bb') : ''
-    };
-  } catch(e) { return { genre: '', cover: '' }; }
-}
-
 // ── SEED LOAD ──
 async function initSeed() {
   if (albums.length === 0) {
     const now = Date.now();
+    // create all albums first so they show up instantly with placeholders
     albums = seedAlbums.map((a, i) => ({
       id: now - (seedAlbums.length - i) * 1000,
       title: a.title,
@@ -1242,11 +1241,12 @@ async function initSeed() {
     }));
     save();
     renderAll();
-    // fetch covers in background
+    // fetch covers one by one via Deezer JSONP
     for (let i = 0; i < albums.length; i++) {
-      const info = await fetchCover(albums[i].title, albums[i].artist);
+      const info = await deezerFetchCover(albums[i].title, albums[i].artist);
       albums[i].cover = info.cover;
-      if (i % 5 === 0) { save(); renderAll(); }
+      albums[i].genre = info.genre;
+      if (i % 4 === 0) { save(); renderAll(); }
     }
     save();
     renderAll();
@@ -1639,46 +1639,44 @@ async function doSearch(q) {
   resultsEl.style.display = 'block';
   resultsEl.innerHTML = `<div style="padding:10px 12px;color:var(--text-muted);font-size:12px;display:flex;align-items:center;gap:8px;"><span class="spinner"></span> Searching...</div>`;
 
-  const results = await searchITunes(q);
+  const results = await deezerSearch(q);
+
   if (!results.length) {
-    resultsEl.innerHTML = `<div style="padding:10px 12px;color:var(--text-muted);font-size:12px;">No results found</div>`;
+    resultsEl.innerHTML = `<div style="padding:10px 12px;color:var(--text-muted);font-size:12px;">No results — <span style="color:#fff;cursor:pointer;" onclick="showManual()">enter manually →</span></div>`;
     return;
   }
 
-  resultsEl.innerHTML = results.slice(0,6).map((r, i) => {
-    const img = r.artworkUrl100 || '';
+  resultsEl.innerHTML = results.slice(0, 6).map((r, i) => {
+    const img = r.cover_medium || r.cover || '';
+    const title = r.title || '';
+    const artist = r.artist?.name || '';
     return `<div class="search-result-item" onclick="selectResult(${i})">
       ${img ? `<img class="sr-thumb" src="${img}" alt="">` : `<div class="sr-thumb" style="display:flex;align-items:center;justify-content:center;font-size:16px;">🎵</div>`}
       <div class="sr-info">
-        <div class="sr-title">${r.collectionName}</div>
-        <div class="sr-artist">${r.artistName}</div>
+        <div class="sr-title">${title}</div>
+        <div class="sr-artist">${artist}</div>
       </div>
     </div>`;
-  }).join('') + `<div class="search-result-item" onclick="showManual()" style="justify-content:center;color:var(--text-muted);font-size:11px;">
-    Can't find it? Enter manually →
-  </div>`;
+  }).join('') + `<div class="search-result-item" onclick="showManual()" style="justify-content:center;color:var(--text-muted);font-size:11px;">Can't find it? Enter manually →</div>`;
 
   window._searchResults = results;
 }
 
 function selectResult(i) {
   const r = window._searchResults[i];
-  const img = r.artworkUrl100 ? r.artworkUrl100.replace('100x100bb', '600x600bb') : '';
+  const img = r.cover_big || r.cover_medium || r.cover || '';
+  const title = r.title || r.collectionName || '';
+  const artist = r.artist?.name || r.artistName || '';
 
-  selectedAlbumData = {
-    title: r.collectionName,
-    artist: r.artistName,
-    cover: img,
-    genre: r.primaryGenreName || ''
-  };
+  selectedAlbumData = { title, artist, cover: img, genre: '' };
 
   document.getElementById('searchResults').style.display = 'none';
   document.getElementById('searchInput').value = '';
 
   const preview = document.getElementById('selectedPreview');
   preview.style.display = 'flex';
-  document.getElementById('previewTitle').textContent = r.collectionName;
-  document.getElementById('previewArtist').textContent = r.artistName;
+  document.getElementById('previewTitle').textContent = title;
+  document.getElementById('previewArtist').textContent = artist;
   const previewImg = document.getElementById('previewImg');
   if (img) { previewImg.src = img; previewImg.style.display = 'block'; }
   else previewImg.style.display = 'none';
@@ -1709,8 +1707,9 @@ async function submitAlbum() {
     title = document.getElementById('manualTitle').value.trim();
     artist = document.getElementById('manualArtist').value.trim();
     if (!title || !artist) { alert('Enter album title and artist'); return; }
-    const info = await fetchCover(title, artist);
+    const info = await deezerFetchCover(title, artist);
     cover = info.cover;
+    genre = info.genre;
   }
 
   const emoji = document.getElementById('emojiInput').value.trim();
@@ -1736,22 +1735,26 @@ async function submitAlbum() {
 
 // ── INIT ──
 load();
-// if albums exist but covers are all empty (broken Last.fm state), re-fetch
-const needsCoverFetch = albums.length > 0 && albums.every(a => !a.cover);
 renderAll();
-if (albums.length === 0) initSeed();
-else if (needsCoverFetch) {
-  // re-fetch all covers with iTunes
-  (async () => {
-    for (let i = 0; i < albums.length; i++) {
-      const info = await fetchCover(albums[i].title, albums[i].artist);
-      albums[i].cover = info.cover;
-      if (!albums[i].genre) albums[i].genre = info.genre;
-      if (i % 5 === 0) { save(); renderAll(); }
-    }
-    save(); renderAll();
-  })();
-} else updateProgress();
+if (albums.length === 0) {
+  initSeed();
+} else {
+  updateProgress();
+  const missing = albums.filter(a => !a.cover);
+  if (missing.length > 0) {
+    (async () => {
+      for (let i = 0; i < albums.length; i++) {
+        if (!albums[i].cover) {
+          const info = await deezerFetchCover(albums[i].title, albums[i].artist);
+          albums[i].cover = info.cover;
+          if (!albums[i].genre && info.genre) albums[i].genre = info.genre;
+          if (i % 4 === 0) { save(); renderAll(); }
+        }
+      }
+      save(); renderAll();
+    })();
+  }
+}
 </script>
 </body>
 </html>
