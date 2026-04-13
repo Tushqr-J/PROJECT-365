@@ -513,8 +513,11 @@
         <label class="form-label">Search Album</label>
         <input class="form-input" id="searchInput" placeholder="Type album or artist..." autocomplete="off" oninput="handleSearch()">
         <div class="search-results" id="searchResults"></div>
-        <div id="manualGroup" style="display:none;flex-direction:column;gap:8px;margin-top:8px;">
-          <div style="font-size:11px;color:var(--text-muted);text-align:center;">Enter manually:</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Or enter manually</label>
+        <div style="display:flex;flex-direction:column;gap:8px;">
           <div style="display:flex;gap:8px;">
             <input class="form-input" style="flex:1" id="manualTitle" placeholder="Album title" autocomplete="off">
             <input class="form-input" style="flex:1" id="manualArtist" placeholder="Artist" autocomplete="off">
@@ -983,7 +986,6 @@ function openAddModal() {
   ['searchInput','manualTitle','manualArtist','emojiInput','notesInput','manualGenre'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
   document.getElementById('searchResults').style.display='none';
   document.getElementById('selectedPreview').style.display='none';
-  document.getElementById('manualGroup').style.display='none';
   document.getElementById('manualCoverPreview').style.display='none';
   manualCoverDataUrl = null;
   buildRatingPicker();
@@ -1013,7 +1015,7 @@ async function doSearch(q) {
   el.innerHTML = `<div style="padding:10px 12px;color:var(--text-muted);font-size:12px;display:flex;align-items:center;gap:8px;"><span class="spinner"></span> Searching...</div>`;
   const results = await spotifySearch(q);
   if (!results.length) {
-    el.innerHTML = `<div style="padding:10px 12px;color:var(--text-muted);font-size:12px;">No results — <span style="color:#fff;cursor:pointer;" onclick="showManual()">enter manually →</span></div>`;
+    el.innerHTML = `<div style="padding:10px 12px;color:var(--text-muted);font-size:12px;">No results — enter manually below.</div>`;
     return;
   }
   window._sr = results;
@@ -1024,7 +1026,7 @@ async function doSearch(q) {
       ${img?`<img class="sr-thumb" src="${img}" alt="">`:`<div class="sr-thumb" style="display:flex;align-items:center;justify-content:center;">🎵</div>`}
       <div class="sr-info"><div class="sr-title">${r.name}</div><div class="sr-artist">${artist}</div></div>
     </div>`;
-  }).join('') + `<div class="search-result-item" onclick="showManual()" style="justify-content:center;color:var(--text-muted);font-size:11px;">Can't find it? Enter manually →</div>`;
+  }).join('');
 }
 
 function selectResult(i) {
@@ -1107,6 +1109,7 @@ async function initSeed() {
     banner.textContent = `Fetching covers from Spotify... ${i+1}/${albums.length}`;
     const info = await spotifyFetchCover(albums[i].title, albums[i].artist);
     albums[i].cover = info.cover;
+    albums[i].genre = info.genre;
     if (i%5===0) { save(); renderAll(); }
   }
   save(); renderAll();
@@ -1138,16 +1141,18 @@ async function boot() {
   if (albums.length === 0) {
     await initSeed();
   } else {
-    const missing = albums.filter(a => !a.cover);
-    if (missing.length > 0) {
+    // re-fetch cover AND genre for anything missing either
+    const needsFetch = albums.filter(a => !a.cover || !a.genre);
+    if (needsFetch.length > 0) {
       const banner = document.getElementById('fetchBanner');
       banner.style.display = 'block';
       let done = 0;
       for (let i=0; i<albums.length; i++) {
-        if (!albums[i].cover) {
-          banner.textContent = `Fetching missing covers... ${++done}/${missing.length}`;
+        if (!albums[i].cover || !albums[i].genre) {
+          banner.textContent = `Fetching data... ${++done}/${needsFetch.length}`;
           const info = await spotifyFetchCover(albums[i].title, albums[i].artist);
-          albums[i].cover = info.cover;
+          if (!albums[i].cover) albums[i].cover = info.cover;
+          if (!albums[i].genre) albums[i].genre = info.genre;
           if (done%5===0) { save(); renderAll(); }
         }
       }
