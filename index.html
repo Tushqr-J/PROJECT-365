@@ -309,7 +309,7 @@
     cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 6px;
   }
   .action-btn:active { transform: scale(0.96); }
-  .action-btn.goat-btn { border-color: var(--gold); color: var(--gold); }
+  .action-btn.aoty-btn { border-color: var(--gold); color: var(--gold); }
   .action-btn.fav-btn { border-color: var(--fav); color: var(--fav); }
   .action-btn.danger { border-color: #c84040; color: #ff6060; background: #2a1a1a; }
 
@@ -571,91 +571,92 @@ const SUPA_URL = 'https://gbnjoxkjqisbebacbqin.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdibmpveGtqcWlzYmViYWNicWluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0MTU1MjUsImV4cCI6MjA5Mjk5MTUyNX0.tzJzx5uPlxjZ_WOiIEpJMOpEhOJOBNQUm-_VyGGbi-I';
 const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
 
-// ── SEED (titles + ratings only, covers fetched from Spotify) ──
+
+// ── SEED (order = listen order 1=oldest, covers fetched from Spotify) ──
 const seedAlbums = [
-  {title:"BACK FOR MORE - Flight",artist:"Nothing",rating:4,emoji:"",notes:""},
-  {title:"mysticspins vol1",artist:"808mystic",rating:4,emoji:"",notes:""},
-  {title:"WONDERLOVE",artist:"Chase Shakur",rating:6,emoji:"",notes:""},
-  {title:"WONDERLOVE + (Deluxe)",artist:"Chase Shakur",rating:5,emoji:"",notes:""},
-  {title:"Year Of Reverse",artist:"Kaz Moon",rating:4,emoji:"",notes:""},
-  {title:"SUPER SLIMEY",artist:"Future & Young Thug",rating:6,emoji:"",notes:""},
-  {title:"NEVER ENOUGH",artist:"Daniel Caesar",rating:8,emoji:"",notes:""},
-  {title:"So Much Fun",artist:"Young Thug",rating:9,emoji:"",notes:""},
-  {title:"ABSOLUTE HEARTBREAK",artist:"Khai Dreams",rating:4,emoji:"",notes:""},
-  {title:"Sling",artist:"Clairo",rating:5,emoji:"",notes:""},
-  {title:"Life of a DON",artist:"Don Toliver",rating:8,emoji:"",notes:""},
-  {title:"The Snow Leopards After Party",artist:"Nimstarr",rating:6,emoji:"",notes:""},
-  {title:"2093",artist:"Yeat",rating:4,emoji:"",notes:""},
-  {title:"Charm",artist:"Clairo",rating:7,emoji:"",notes:""},
-  {title:"It'll Be Fine",artist:"Chase Shakur",rating:7,emoji:"",notes:""},
-  {title:"Don't Be Dumb",artist:"A$AP Rocky",rating:8,emoji:"",notes:""},
-  {title:"DECIDE",artist:"Djo",rating:6,emoji:"",notes:""},
-  {title:"Drip Season 3",artist:"Gunna",rating:4,emoji:"",notes:""},
-  {title:"BEASTMODE 2",artist:"Future",rating:6,emoji:"",notes:""},
-  {title:"The High School Tape",artist:"Dugui",rating:4,emoji:"",notes:""},
-  {title:"Count Up Dracula",artist:"jaydes",rating:5,emoji:"",notes:""},
-  {title:"Currents",artist:"Tame Impala",rating:10,emoji:"💿",notes:""},
-  {title:"K.I.D.S.",artist:"Mac Miller",rating:8,emoji:"",notes:""},
-  {title:"Romance & Pandemonium",artist:"Tom The Mailman",rating:2,emoji:"",notes:""},
-  {title:"e.t.d.s. A Mixtape by .i.d.k.",artist:"IDK",rating:6,emoji:"",notes:""},
-  {title:"Jump Out",artist:"OsamaSon",rating:2,emoji:"",notes:""},
-  {title:"Son Of Spergy",artist:"Daniel Caesar",rating:5,emoji:"",notes:""},
-  {title:"Octane",artist:"Don Toliver",rating:6,emoji:"",notes:""},
-  {title:"HUG ME AS IF WE WERE TO DIE TOMORROW",artist:"Wale The Sage",rating:4,emoji:"",notes:""},
-  {title:"Dark Lane Demo Tapes",artist:"Drake",rating:7,emoji:"",notes:""},
-  {title:"Still Serving",artist:"A$AP Ferg",rating:5,emoji:"",notes:""},
-  {title:"Love Deluxe",artist:"Sade",rating:5,emoji:"",notes:""},
-  {title:"The New Abnormal",artist:"The Strokes",rating:6,emoji:"",notes:""},
-  {title:"Piss In The Wind",artist:"Joji",rating:8,emoji:"",notes:""},
-  {title:"The Fall Off",artist:"J. Cole",rating:8,emoji:"",notes:""},
-  {title:"King Of The Mischievous South",artist:"Denzel Curry",rating:7,emoji:"",notes:""},
-  {title:"My Turn (Deluxe)",artist:"Lil Baby",rating:5,emoji:"",notes:""},
-  {title:"A Love Letter To You 3",artist:"Trippie Red",rating:6,emoji:"",notes:""},
-  {title:"Camp",artist:"Childish Gambino",rating:9,emoji:"",notes:""},
-  {title:"Take Care (Deluxe)",artist:"Drake",rating:9,emoji:"",notes:""},
-  {title:"DAMN.",artist:"Kendrick Lamar",rating:8,emoji:"",notes:""},
-  {title:"2014 Forest Hills Drive",artist:"J. Cole",rating:8,emoji:"",notes:""},
-  {title:"It's Us Vol. 1",artist:"Concrete Boys",rating:5,emoji:"",notes:""},
-  {title:"Cole World: The Sideline Story",artist:"J. Cole",rating:7,emoji:"",notes:""},
-  {title:"Ca$ino",artist:"Baby Keem",rating:9,emoji:"",notes:""},
-  {title:"EXTC",artist:"greek",rating:6,emoji:"",notes:""},
-  {title:"STORY OF ARCHIVES",artist:"alan vuong",rating:6,emoji:"",notes:""},
-  {title:"PLAYBOY",artist:"Tory Lanez",rating:6,emoji:"",notes:""},
-  {title:"It's Us Vol. 2",artist:"Concrete Boys",rating:4,emoji:"",notes:""},
-  {title:"The Romantic",artist:"Bruno Mars",rating:6,emoji:"",notes:""},
-  {title:"Born Sinner (Deluxe Version)",artist:"J. Cole",rating:6,emoji:"",notes:""},
-  {title:"i am > i was",artist:"21 Savage",rating:8,emoji:"",notes:""},
-  {title:"56 Nights",artist:"Future",rating:6,emoji:"",notes:""},
-  {title:"In Rainbows",artist:"Radiohead",rating:10,emoji:"🌈",notes:""},
-  {title:"Winners Circle",artist:"rexv2",rating:4,emoji:"",notes:""},
-  {title:"Strictly 4 The Scythe",artist:"Denzel Curry",rating:6,emoji:"",notes:""},
-  {title:"SAVIOUR",artist:"1300SAINT",rating:7,emoji:"",notes:""},
-  {title:"SAVIOUR:+++",artist:"1300SAINT",rating:6,emoji:"",notes:""},
-  {title:"ii",artist:"iyrus",rating:5,emoji:"",notes:""},
-  {title:"MUTT",artist:"Leon Thomas",rating:2,emoji:"",notes:""},
-  {title:"A Night At The Opera",artist:"Queen",rating:8,emoji:"",notes:""},
-  {title:"Only Built For Infinity Links",artist:"Quavo and Takeoff",rating:6,emoji:"",notes:""},
-  {title:"1999",artist:"Joey Bada$$",rating:8,emoji:"",notes:""},
-  {title:"Awaken, My Love!",artist:"Childish Gambino",rating:5,emoji:"",notes:""},
-  {title:"Love Sick",artist:"Don Toliver",rating:6,emoji:"",notes:""},
-  {title:"Stankonia",artist:"Outkast",rating:7,emoji:"",notes:""},
-  {title:"Life After Death",artist:"The Notorious B.I.G",rating:9,emoji:"",notes:""},
-  {title:"Pablo Honey",artist:"Radiohead",rating:7,emoji:"",notes:""},
-  {title:"Alfredo 2",artist:"Freddie Gibbs, The Alchemist",rating:8,emoji:"",notes:""},
-  {title:"[pieces]",artist:"Oscar Lang",rating:6,emoji:"",notes:""},
-  {title:"ADL",artist:"Yeat",rating:6,emoji:"",notes:""},
-  {title:"BULLY",artist:"Ye",rating:9,emoji:"",notes:""},
-  {title:"Barter 16",artist:"Lil Uzi Vert",rating:8,emoji:"",notes:"",skipCover:true},
-  {title:"Angel's Pulse",artist:"Blood Orange",rating:5,emoji:"",notes:""},
-  {title:"Because The Internet",artist:"Childish Gambino",rating:7,emoji:"",notes:""},
-  {title:"32 Levels",artist:"Clams Casino",rating:7,emoji:"",notes:""},
-  {title:"The Slim Shady LP",artist:"Eminem",rating:8,emoji:"",notes:""},
-  {title:"Zombie Boy",artist:"Scruffpuppie",rating:5,emoji:"",notes:""},
-  {title:"The Last Wun",artist:"Gunna",rating:5,emoji:"",notes:""},
-  {title:"SADDEST TRUTH",artist:"sign crushes motorist, KayCyy",rating:6,emoji:"",notes:""},
-  {title:"Honestly Nevermind",artist:"Drake",rating:5,emoji:"",notes:""},
-  {title:"Shawcross",artist:"Good morning",rating:6,emoji:"",notes:""},
-  {title:"Paramore",artist:"Paramore",rating:8,emoji:"",notes:""},
+  {order:1,  title:"BACK FOR MORE - Flight",artist:"Nothing",rating:4,emoji:"",notes:""},
+  {order:2,  title:"mysticspins vol1",artist:"808mystic",rating:4,emoji:"",notes:""},
+  {order:3,  title:"WONDERLOVE",artist:"Chase Shakur",rating:6,emoji:"",notes:""},
+  {order:4,  title:"WONDERLOVE + (Deluxe)",artist:"Chase Shakur",rating:5,emoji:"",notes:""},
+  {order:5,  title:"Year Of Reverse",artist:"Kaz Moon",rating:4,emoji:"",notes:""},
+  {order:6,  title:"SUPER SLIMEY",artist:"Future & Young Thug",rating:6,emoji:"",notes:""},
+  {order:7,  title:"NEVER ENOUGH",artist:"Daniel Caesar",rating:8,emoji:"",notes:""},
+  {order:8,  title:"So Much Fun",artist:"Young Thug",rating:9,emoji:"",notes:""},
+  {order:9,  title:"ABSOLUTE HEARTBREAK",artist:"Khai Dreams",rating:4,emoji:"",notes:""},
+  {order:10, title:"Sling",artist:"Clairo",rating:5,emoji:"",notes:""},
+  {order:11, title:"Life of a DON",artist:"Don Toliver",rating:8,emoji:"",notes:""},
+  {order:12, title:"The Snow Leopards After Party",artist:"Nimstarr",rating:6,emoji:"",notes:""},
+  {order:13, title:"2093",artist:"Yeat",rating:4,emoji:"",notes:""},
+  {order:14, title:"Charm",artist:"Clairo",rating:7,emoji:"",notes:""},
+  {order:15, title:"It'll Be Fine",artist:"Chase Shakur",rating:7,emoji:"",notes:""},
+  {order:16, title:"Don't Be Dumb",artist:"A$AP Rocky",rating:8,emoji:"",notes:""},
+  {order:17, title:"DECIDE",artist:"Djo",rating:6,emoji:"",notes:""},
+  {order:18, title:"Drip Season 3",artist:"Gunna",rating:4,emoji:"",notes:""},
+  {order:19, title:"BEASTMODE 2",artist:"Future",rating:6,emoji:"",notes:""},
+  {order:20, title:"The High School Tape",artist:"Dugui",rating:4,emoji:"",notes:""},
+  {order:21, title:"Count Up Dracula",artist:"jaydes",rating:5,emoji:"",notes:""},
+  {order:22, title:"Currents",artist:"Tame Impala",rating:10,emoji:"💿",notes:""},
+  {order:23, title:"K.I.D.S.",artist:"Mac Miller",rating:8,emoji:"",notes:""},
+  {order:24, title:"Romance & Pandemonium",artist:"Tom The Mailman",rating:2,emoji:"",notes:""},
+  {order:25, title:"e.t.d.s. A Mixtape by .i.d.k.",artist:"IDK",rating:6,emoji:"",notes:""},
+  {order:26, title:"Jump Out",artist:"OsamaSon",rating:2,emoji:"",notes:""},
+  {order:27, title:"Son Of Spergy",artist:"Daniel Caesar",rating:5,emoji:"",notes:""},
+  {order:28, title:"Octane",artist:"Don Toliver",rating:6,emoji:"",notes:""},
+  {order:29, title:"HUG ME AS IF WE WERE TO DIE TOMORROW",artist:"Wale The Sage",rating:4,emoji:"",notes:""},
+  {order:30, title:"Dark Lane Demo Tapes",artist:"Drake",rating:7,emoji:"",notes:""},
+  {order:31, title:"Still Serving",artist:"A$AP Ferg",rating:5,emoji:"",notes:""},
+  {order:32, title:"Love Deluxe",artist:"Sade",rating:5,emoji:"",notes:""},
+  {order:33, title:"The New Abnormal",artist:"The Strokes",rating:6,emoji:"",notes:""},
+  {order:34, title:"Piss In The Wind",artist:"Joji",rating:8,emoji:"",notes:""},
+  {order:35, title:"The Fall Off",artist:"J. Cole",rating:8,emoji:"",notes:""},
+  {order:36, title:"King Of The Mischievous South",artist:"Denzel Curry",rating:7,emoji:"",notes:""},
+  {order:37, title:"My Turn (Deluxe)",artist:"Lil Baby",rating:5,emoji:"",notes:""},
+  {order:38, title:"A Love Letter To You 3",artist:"Trippie Red",rating:6,emoji:"",notes:""},
+  {order:39, title:"Camp",artist:"Childish Gambino",rating:9,emoji:"",notes:""},
+  {order:40, title:"Take Care (Deluxe)",artist:"Drake",rating:9,emoji:"",notes:""},
+  {order:41, title:"DAMN.",artist:"Kendrick Lamar",rating:8,emoji:"",notes:""},
+  {order:42, title:"2014 Forest Hills Drive",artist:"J. Cole",rating:8,emoji:"",notes:""},
+  {order:43, title:"It's Us Vol. 1",artist:"Concrete Boys",rating:5,emoji:"",notes:""},
+  {order:44, title:"Cole World: The Sideline Story",artist:"J. Cole",rating:7,emoji:"",notes:""},
+  {order:45, title:"Ca\$ino",artist:"Baby Keem",rating:9,emoji:"",notes:""},
+  {order:46, title:"EXTC",artist:"greek",rating:6,emoji:"",notes:""},
+  {order:47, title:"STORY OF ARCHIVES",artist:"alan vuong",rating:6,emoji:"",notes:""},
+  {order:48, title:"PLAYBOY",artist:"Tory Lanez",rating:6,emoji:"",notes:""},
+  {order:49, title:"It's Us Vol. 2",artist:"Concrete Boys",rating:4,emoji:"",notes:""},
+  {order:50, title:"The Romantic",artist:"Bruno Mars",rating:6,emoji:"",notes:""},
+  {order:51, title:"Born Sinner (Deluxe Version)",artist:"J. Cole",rating:6,emoji:"",notes:""},
+  {order:52, title:"i am > i was",artist:"21 Savage",rating:8,emoji:"",notes:""},
+  {order:53, title:"56 Nights",artist:"Future",rating:6,emoji:"",notes:""},
+  {order:54, title:"In Rainbows",artist:"Radiohead",rating:10,emoji:"🌈",notes:""},
+  {order:55, title:"Winners Circle",artist:"rexv2",rating:4,emoji:"",notes:""},
+  {order:56, title:"Strictly 4 The Scythe",artist:"Denzel Curry",rating:6,emoji:"",notes:""},
+  {order:57, title:"SAVIOUR",artist:"1300SAINT",rating:7,emoji:"",notes:""},
+  {order:58, title:"SAVIOUR:+++",artist:"1300SAINT",rating:6,emoji:"",notes:""},
+  {order:59, title:"ii",artist:"iyrus",rating:5,emoji:"",notes:""},
+  {order:60, title:"MUTT",artist:"Leon Thomas",rating:2,emoji:"",notes:""},
+  {order:61, title:"A Night At The Opera",artist:"Queen",rating:8,emoji:"",notes:""},
+  {order:62, title:"Only Built For Infinity Links",artist:"Quavo and Takeoff",rating:6,emoji:"",notes:""},
+  {order:63, title:"1999",artist:"Joey Bada\$\$",rating:8,emoji:"",notes:""},
+  {order:64, title:"Awaken, My Love!",artist:"Childish Gambino",rating:5,emoji:"",notes:""},
+  {order:65, title:"Love Sick",artist:"Don Toliver",rating:6,emoji:"",notes:""},
+  {order:66, title:"Stankonia",artist:"Outkast",rating:7,emoji:"",notes:""},
+  {order:67, title:"Life After Death",artist:"The Notorious B.I.G",rating:9,emoji:"",notes:""},
+  {order:68, title:"Pablo Honey",artist:"Radiohead",rating:7,emoji:"",notes:""},
+  {order:69, title:"Alfredo 2",artist:"Freddie Gibbs, The Alchemist",rating:8,emoji:"",notes:""},
+  {order:70, title:"[pieces]",artist:"Oscar Lang",rating:6,emoji:"",notes:""},
+  {order:71, title:"ADL",artist:"Yeat",rating:6,emoji:"",notes:""},
+  {order:72, title:"BULLY",artist:"Ye",rating:9,emoji:"",notes:""},
+  {order:73, title:"Barter 16",artist:"Lil Uzi Vert",rating:8,emoji:"",notes:"",skipCover:true},
+  {order:74, title:"Angel's Pulse",artist:"Blood Orange",rating:5,emoji:"",notes:""},
+  {order:75, title:"Because The Internet",artist:"Childish Gambino",rating:7,emoji:"",notes:""},
+  {order:76, title:"32 Levels",artist:"Clams Casino",rating:7,emoji:"",notes:""},
+  {order:77, title:"The Slim Shady LP",artist:"Eminem",rating:8,emoji:"",notes:""},
+  {order:78, title:"Zombie Boy",artist:"Scruffpuppie",rating:5,emoji:"",notes:""},
+  {order:79, title:"SADDEST TRUTH",artist:"sign crushes motorist, KayCyy",rating:6,emoji:"",notes:""},
+  {order:80, title:"The Last Wun",artist:"Gunna",rating:5,emoji:"",notes:""},
+  {order:81, title:"Honestly Nevermind",artist:"Drake",rating:5,emoji:"",notes:""},
+  {order:82, title:"Shawcross",artist:"Good Morning",rating:6,emoji:"",notes:""},
+  {order:83, title:"Paramore",artist:"Paramore",rating:8,emoji:"",notes:""},
 ];
 
 // ── STATE ──
@@ -669,7 +670,7 @@ function saveLocal() { localStorage.setItem(STORAGE_KEY, JSON.stringify({ albums
 function save() { saveLocal(); } // kept for internal calls that don't need async
 
 async function sbInsert(a) {
-  const row = { title:a.title, artist:a.artist, rating:a.rating, genre:a.genre||'', cover_url:a.cover||'', emoji:a.emoji||'', notes:a.notes||'', is_favourite:a.fav||false, is_crown:crownId===a.id };
+  const row = { title:a.title, artist:a.artist, rating:a.rating, genre:a.genre||'', cover_url:a.cover||'', emoji:a.emoji||'', notes:a.notes||'', is_favourite:a.fav||false, is_crown:crownId===a.id, sort_order:a.sortOrder||9999 };
   const { data, error } = await sb.from('albums').insert([row]).select().single();
   if (!error && data) { a._sbid = data.id; saveLocal(); }
 }
@@ -691,17 +692,15 @@ async function sbSetCrown(newCrownSbid, oldCrownSbid) {
   saveLocal();
 }
 async function loadFromSupabase() {
-  const { data, error } = await sb.from('albums').select('*').order('created_at', { ascending: true });
+  const { data, error } = await sb.from('albums').select('*').order('sort_order', { ascending: true });
   if (error || !data) return false;
-  // assign sequential dateAdded so sort order is deterministic
-  const base = Date.now();
-  albums = data.map((r, i) => ({
+  albums = data.map(r => ({
     _sbid: r.id,
     id: r.id,
     title: r.title, artist: r.artist||'', rating: r.rating||0,
     genre: r.genre||'', cover: r.cover_url||'', emoji: r.emoji||'',
     notes: r.notes||'', fav: r.is_favourite||false,
-    dateAdded: base - (data.length - i) * 1000 // oldest first = smallest dateAdded
+    sortOrder: r.sort_order || 9999
   }));
   const crowned = data.find(r => r.is_crown);
   crownId = crowned ? crowned.id : null;
@@ -804,10 +803,10 @@ function ratingBg(r) {
 // ── SORT ──
 function getSorted(arr, sort) {
   const a = [...arr];
-  if (sort === 'date') return a.sort((x,y) => y.dateAdded - x.dateAdded); // latest first
-  if (sort === 'oldest') return a.sort((x,y) => x.dateAdded - y.dateAdded); // oldest first
-  if (sort === 'rating-desc') return a.sort((x,y) => y.rating - x.rating || y.dateAdded - x.dateAdded);
-  if (sort === 'rating-asc') return a.sort((x,y) => x.rating - y.rating || y.dateAdded - x.dateAdded);
+  if (sort === 'date') return a.sort((x,y) => (y.sortOrder||9999) - (x.sortOrder||9999)); // latest = highest order num
+  if (sort === 'oldest') return a.sort((x,y) => (x.sortOrder||9999) - (y.sortOrder||9999)); // oldest = lowest order num
+  if (sort === 'rating-desc') return a.sort((x,y) => y.rating - x.rating || (x.sortOrder||9999) - (y.sortOrder||9999));
+  if (sort === 'rating-asc') return a.sort((x,y) => x.rating - y.rating || (x.sortOrder||9999) - (y.sortOrder||9999));
   if (sort === 'alpha') return a.sort((x,y) => x.title.localeCompare(y.title));
   return a;
 }
@@ -817,7 +816,7 @@ function renderWall() {
   document.getElementById('albumGrid').innerHTML = getSorted(albums, currentSort).map((al,i) => `
     <div class="album-card ${al.rating===10?'is-ten':''}" style="animation-delay:${Math.min(i,20)*0.03}s" onclick="openDetail('${al.id}')">
       ${al.cover ? `<img src="${al.cover}" alt="" loading="lazy">` : `<div class="cover-placeholder"><div class="ph-title">${al.title}</div><div class="ph-artist">${al.artist}</div></div>`}
-      ${al.id===crownId?`<div class="crown-badge">🐐</div>`:''}
+      ${al.id===crownId?`<div class="crown-badge">🎙</div>`:''}
       ${al.fav&&al.id!==crownId?`<div class="fav-badge">♥</div>`:''}
       <div class="rating-badge" style="background:${ratingBg(al.rating)};color:#fff;">${al.rating}</div>
     </div>`).join('');
@@ -834,7 +833,7 @@ function renderList() {
       </div>
       <div class="list-right">
         <div class="list-rating" style="color:${ratingColor(al.rating)}">${al.rating}</div>
-        <div class="list-icons">${al.id===crownId?'🐐':''}${al.fav?'♥':''}</div>
+        <div class="list-icons">${al.id===crownId?'🎙':''}${al.fav?'♥':''}</div>
       </div>
     </div>`).join('');
 }
@@ -843,7 +842,7 @@ function renderFavs() {
   const crowned = crownId ? albums.find(a => a.id === crownId) : null;
   document.getElementById('crownSection').innerHTML = crowned ? `
     <div class="crown-card" onclick="openDetail('${crowned.id}')">
-      <div class="crown-banner"><span>🐐</span><span>THE GOAT</span></div>
+      <div class="crown-banner"><span>🎙</span><span>AOTY</span></div>
       <div class="crown-content">
         ${crowned.cover?`<img class="crown-cover" src="${crowned.cover}" alt="">`:`<div class="crown-cover-placeholder">🎵</div>`}
         <div class="crown-info">
@@ -855,10 +854,10 @@ function renderFavs() {
     </div>` : `
     <div class="crown-card" style="border-color:var(--border);box-shadow:none;cursor:default;">
       <div class="crown-content">
-        <div class="crown-cover-placeholder" style="opacity:0.3;">🐐</div>
+        <div class="crown-cover-placeholder" style="opacity:0.3;">🎙</div>
         <div class="crown-info">
-          <div class="crown-album-title" style="color:var(--text-muted)">No Crown Yet</div>
-          <div class="crown-artist" style="font-size:11px;color:var(--text-muted)">Open an album and crown your #1</div>
+          <div class="crown-album-title" style="color:var(--text-muted)">No AOTY Yet</div>
+          <div class="crown-artist" style="font-size:11px;color:var(--text-muted)">Open an album and mark your AOTY</div>
         </div>
       </div>
     </div>`;
@@ -950,11 +949,12 @@ function openDetail(id) {
     </div>`;
   document.getElementById('detailActions').innerHTML = `
     <button class="action-btn fav-btn" onclick="toggleFav('${id}')">${al.fav?'♥ Unfavourite':'♡ Favourite'}</button>
-    <button class="action-btn goat-btn" onclick="setCrown('${id}')">${al.id===crownId?'🐐 Un-GOAT':'🐐 GOAT This'}</button>
+    <button class="action-btn aoty-btn" onclick="setCrown('${id}')">${al.id===crownId?'🎙 Un-AOTY':'🎙 Mark AOTY'}</button>
     <button class="action-btn" onclick="openEdit('${id}')" style="border-color:#555;color:#ccc;">✏️ Edit</button>
     <button class="action-btn danger" onclick="confirmDelete('${id}')">🗑 Remove</button>`;
   document.getElementById('editSection').style.display = 'none';
   document.getElementById('detailOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
 }
 
 function changeCover(id, input) {
@@ -973,7 +973,7 @@ function changeCover(id, input) {
 }
 
 function closeDetailIfBg(e) { if (e.target===document.getElementById('detailOverlay')) closeDetail(); }
-function closeDetail() { document.getElementById('detailOverlay').classList.remove('open'); }
+function closeDetail() { document.getElementById('detailOverlay').classList.remove('open'); document.body.style.overflow=''; }
 
 function confirmDelete(id) {
   document.getElementById('detailActions').innerHTML = `
@@ -1050,10 +1050,11 @@ function openAddModal() {
   manualCoverDataUrl = null;
   buildRatingPicker();
   document.getElementById('addOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
 }
 
 function closeAddIfBg(e) { if(e.target===document.getElementById('addOverlay')) closeAdd(); }
-function closeAdd() { document.getElementById('addOverlay').classList.remove('open'); }
+function closeAdd() { document.getElementById('addOverlay').classList.remove('open'); document.body.style.overflow=''; }
 
 function buildRatingPicker() {
   document.getElementById('ratingPicker').innerHTML = Array.from({length:11},(_,i)=>`
@@ -1146,7 +1147,8 @@ async function submitAlbum() {
   }
   const emoji = document.getElementById('emojiInput').value.trim();
   const notes = document.getElementById('notesInput').value.trim();
-  albums.push({ id: Date.now(), title, artist, rating: selectedRating, emoji: selectedRating===10?emoji:'', notes, cover, genre, fav: false, dateAdded: Date.now() });
+  const nextOrder = albums.length > 0 ? Math.max(...albums.map(a => a.sortOrder||0)) + 1 : 1;
+  albums.push({ id: Date.now(), title, artist, rating: selectedRating, emoji: selectedRating===10?emoji:'', notes, cover, genre, fav: false, sortOrder: nextOrder });
   save();
   const newAlbum = albums[albums.length-1];
   sbInsert(newAlbum); // async, fire and forget — _sbid will be set when it resolves
@@ -1163,7 +1165,7 @@ async function initSeed() {
   banner.textContent = 'Seeding albums into database...';
 
   // insert all seed albums into Supabase (with empty cover/genre)
-  const rows = seedAlbums.map(a => ({ title:a.title, artist:a.artist, rating:a.rating, emoji:a.emoji||'', notes:a.notes||'', cover_url:'', genre:'', is_favourite:false, is_crown:false }));
+  const rows = seedAlbums.map(a => ({ title:a.title, artist:a.artist, rating:a.rating, emoji:a.emoji||'', notes:a.notes||'', cover_url:'', genre:'', is_favourite:false, is_crown:false, sort_order:a.order }));
   const { data, error } = await sb.from('albums').insert(rows).select();
   if (error || !data) { banner.textContent = 'Seed failed. Check console.'; console.error(error); return; }
 
