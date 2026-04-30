@@ -574,9 +574,9 @@ const seedAlbums = [
   {title:"BACK FOR MORE - Flight",artist:"Nothing",rating:4,emoji:"",notes:""},
   {title:"mysticspins vol1",artist:"808mystic",rating:4,emoji:"",notes:""},
   {title:"WONDERLOVE",artist:"Chase Shakur",rating:6,emoji:"",notes:""},
-  {title:"WONDERLOVE +",artist:"Chase Shakur",rating:5,emoji:"",notes:""},
+  {title:"WONDERLOVE + (Deluxe)",artist:"Chase Shakur",rating:5,emoji:"",notes:""},
   {title:"Year Of Reverse",artist:"Kaz Moon",rating:4,emoji:"",notes:""},
-  {title:"SUPER SLIMEY",artist:"Future",rating:6,emoji:"",notes:""},
+  {title:"SUPER SLIMEY",artist:"Future & Young Thug",rating:6,emoji:"",notes:""},
   {title:"NEVER ENOUGH",artist:"Daniel Caesar",rating:8,emoji:"",notes:""},
   {title:"So Much Fun",artist:"Young Thug",rating:9,emoji:"",notes:""},
   {title:"ABSOLUTE HEARTBREAK",artist:"Khai Dreams",rating:4,emoji:"",notes:""},
@@ -595,7 +595,7 @@ const seedAlbums = [
   {title:"Currents",artist:"Tame Impala",rating:10,emoji:"💿",notes:""},
   {title:"K.I.D.S.",artist:"Mac Miller",rating:8,emoji:"",notes:""},
   {title:"Romance & Pandemonium",artist:"Tom The Mailman",rating:2,emoji:"",notes:""},
-  {title:"e.t.d.s.",artist:"IDK",rating:6,emoji:"",notes:""},
+  {title:"e.t.d.s. A Mixtape by .i.d.k.",artist:"IDK",rating:6,emoji:"",notes:""},
   {title:"Jump Out",artist:"OsamaSon",rating:2,emoji:"",notes:""},
   {title:"Son Of Spergy",artist:"Daniel Caesar",rating:5,emoji:"",notes:""},
   {title:"Octane",artist:"Don Toliver",rating:6,emoji:"",notes:""},
@@ -607,10 +607,10 @@ const seedAlbums = [
   {title:"Piss In The Wind",artist:"Joji",rating:8,emoji:"",notes:""},
   {title:"The Fall Off",artist:"J. Cole",rating:8,emoji:"",notes:""},
   {title:"King Of The Mischievous South",artist:"Denzel Curry",rating:7,emoji:"",notes:""},
-  {title:"My Turn",artist:"Lil Baby",rating:5,emoji:"",notes:""},
+  {title:"My Turn (Deluxe)",artist:"Lil Baby",rating:5,emoji:"",notes:""},
   {title:"A Love Letter To You 3",artist:"Trippie Red",rating:6,emoji:"",notes:""},
   {title:"Camp",artist:"Childish Gambino",rating:9,emoji:"",notes:""},
-  {title:"Take Care",artist:"Drake",rating:9,emoji:"",notes:""},
+  {title:"Take Care (Deluxe)",artist:"Drake",rating:9,emoji:"",notes:""},
   {title:"DAMN.",artist:"Kendrick Lamar",rating:8,emoji:"",notes:""},
   {title:"2014 Forest Hills Drive",artist:"J. Cole",rating:8,emoji:"",notes:""},
   {title:"It's Us Vol. 1",artist:"Concrete Boys",rating:5,emoji:"",notes:""},
@@ -621,7 +621,7 @@ const seedAlbums = [
   {title:"PLAYBOY",artist:"Tory Lanez",rating:6,emoji:"",notes:""},
   {title:"It's Us Vol. 2",artist:"Concrete Boys",rating:4,emoji:"",notes:""},
   {title:"The Romantic",artist:"Bruno Mars",rating:6,emoji:"",notes:""},
-  {title:"Born Sinner",artist:"J. Cole",rating:6,emoji:"",notes:""},
+  {title:"Born Sinner (Deluxe Version)",artist:"J. Cole",rating:6,emoji:"",notes:""},
   {title:"i am > i was",artist:"21 Savage",rating:8,emoji:"",notes:""},
   {title:"56 Nights",artist:"Future",rating:6,emoji:"",notes:""},
   {title:"In Rainbows",artist:"Radiohead",rating:10,emoji:"🌈",notes:""},
@@ -637,9 +637,9 @@ const seedAlbums = [
   {title:"Awaken, My Love!",artist:"Childish Gambino",rating:5,emoji:"",notes:""},
   {title:"Love Sick",artist:"Don Toliver",rating:6,emoji:"",notes:""},
   {title:"Stankonia",artist:"Outkast",rating:7,emoji:"",notes:""},
-  {title:"Life After Death",artist:"The Notorious B.I.G.",rating:9,emoji:"",notes:""},
+  {title:"Life After Death",artist:"The Notorious B.I.G",rating:9,emoji:"",notes:""},
   {title:"Pablo Honey",artist:"Radiohead",rating:7,emoji:"",notes:""},
-  {title:"Alfredo 2",artist:"Freddie Gibbs",rating:8,emoji:"",notes:""},
+  {title:"Alfredo 2",artist:"Freddie Gibbs, The Alchemist",rating:8,emoji:"",notes:""},
   {title:"[pieces]",artist:"Oscar Lang",rating:6,emoji:"",notes:""},
   {title:"ADL",artist:"Yeat",rating:6,emoji:"",notes:""},
   {title:"BULLY",artist:"Ye",rating:9,emoji:"",notes:""},
@@ -648,6 +648,12 @@ const seedAlbums = [
   {title:"Because The Internet",artist:"Childish Gambino",rating:7,emoji:"",notes:""},
   {title:"32 Levels",artist:"Clams Casino",rating:7,emoji:"",notes:""},
   {title:"The Slim Shady LP",artist:"Eminem",rating:8,emoji:"",notes:""},
+  {title:"Zombie Boy",artist:"Scruffpuppie",rating:5,emoji:"",notes:""},
+  {title:"The Last Wun",artist:"Gunna",rating:5,emoji:"",notes:""},
+  {title:"SADDEST TRUTH",artist:"sign crushes motorist, KayCyy",rating:6,emoji:"",notes:""},
+  {title:"Honestly Nevermind",artist:"Drake",rating:5,emoji:"",notes:""},
+  {title:"Shawcross",artist:"Good morning",rating:6,emoji:"",notes:""},
+  {title:"Paramore",artist:"Paramore",rating:8,emoji:"",notes:""},
 ];
 
 // ── STATE ──
@@ -803,7 +809,7 @@ function getSorted(arr, sort) {
 // ── RENDERS ──
 function renderWall() {
   document.getElementById('albumGrid').innerHTML = getSorted(albums, currentSort).map((al,i) => `
-    <div class="album-card ${al.rating===10?'is-ten':''}" style="animation-delay:${Math.min(i,20)*0.03}s" onclick="openDetail(${al.id})">
+    <div class="album-card ${al.rating===10?'is-ten':''}" style="animation-delay:${Math.min(i,20)*0.03}s" onclick="openDetail('${al.id}')">
       ${al.cover ? `<img src="${al.cover}" alt="" loading="lazy">` : `<div class="cover-placeholder"><div class="ph-title">${al.title}</div><div class="ph-artist">${al.artist}</div></div>`}
       ${al.id===crownId?`<div class="crown-badge">👑</div>`:''}
       ${al.fav&&al.id!==crownId?`<div class="fav-badge">♥</div>`:''}
@@ -813,7 +819,7 @@ function renderWall() {
 
 function renderList() {
   document.getElementById('albumList').innerHTML = getSorted(albums, currentListSort).map((al,i) => `
-    <div class="list-item ${al.rating===10?'is-ten':''}" style="animation-delay:${Math.min(i,20)*0.02}s" onclick="openDetail(${al.id})">
+    <div class="list-item ${al.rating===10?'is-ten':''}" style="animation-delay:${Math.min(i,20)*0.02}s" onclick="openDetail('${al.id}')">
       ${al.cover ? `<img class="list-thumb" src="${al.cover}" alt="" loading="lazy">` : `<div class="list-thumb-placeholder">🎵</div>`}
       <div class="list-info">
         <div class="list-title">${al.title}</div>
@@ -830,7 +836,7 @@ function renderList() {
 function renderFavs() {
   const crowned = crownId ? albums.find(a => a.id === crownId) : null;
   document.getElementById('crownSection').innerHTML = crowned ? `
-    <div class="crown-card" onclick="openDetail(${crowned.id})">
+    <div class="crown-card" onclick="openDetail('${crowned.id}')">
       <div class="crown-banner"><span>👑</span><span>THE ONE</span></div>
       <div class="crown-content">
         ${crowned.cover?`<img class="crown-cover" src="${crowned.cover}" alt="">`:`<div class="crown-cover-placeholder">🎵</div>`}
@@ -855,7 +861,7 @@ function renderFavs() {
   document.getElementById('favsGrid').innerHTML = !favs.length
     ? `<div class="empty-state"><div class="big">♥</div>Open any album and mark it as a favourite</div>`
     : favs.map((al,i) => `
-      <div class="album-card ${al.rating===10?'is-ten':''}" style="animation-delay:${i*0.03}s" onclick="openDetail(${al.id})">
+      <div class="album-card ${al.rating===10?'is-ten':''}" style="animation-delay:${i*0.03}s" onclick="openDetail('${al.id}')">
         ${al.cover?`<img src="${al.cover}" alt="" loading="lazy">`:`<div class="cover-placeholder"><div class="ph-title">${al.title}</div><div class="ph-artist">${al.artist}</div></div>`}
         <div class="rating-badge" style="background:${ratingBg(al.rating)};color:#fff;">${al.rating}</div>
       </div>`).join('');
@@ -885,7 +891,7 @@ function renderStats() {
       ${Object.entries(tc).map(([k,v])=>`<div class="tier-row"><div class="tier-label">${k}</div><div class="tier-bar-wrap"><div class="tier-bar-fill" style="width:${albums.length?v/albums.length*100:0}%;background:${tcol[k]}"></div></div><div class="tier-count">${v}</div></div>`).join('')}
     </div></div>
     ${tens.length?`<div class="stat-card wide"><div class="stat-label">Masterpieces</div><div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;">
-      ${tens.map(a=>`<div style="display:flex;align-items:center;gap:8px;background:rgba(224,64,200,0.1);border:1px solid rgba(224,64,200,0.3);border-radius:10px;padding:7px 10px;flex:1;min-width:140px;cursor:pointer;" onclick="openDetail(${a.id})">
+      ${tens.map(a=>`<div style="display:flex;align-items:center;gap:8px;background:rgba(224,64,200,0.1);border:1px solid rgba(224,64,200,0.3);border-radius:10px;padding:7px 10px;flex:1;min-width:140px;cursor:pointer;" onclick="openDetail('${a.id}')">
         ${a.cover?`<img src="${a.cover}" style="width:36px;height:36px;border-radius:5px;object-fit:cover;box-shadow:0 0 8px rgba(224,64,200,0.4);" alt="">`:'<div style="width:36px;height:36px;border-radius:5px;background:var(--surface3);display:flex;align-items:center;justify-content:center;">🎵</div>'}
         <div><div style="font-size:11px;font-weight:600;">${a.title}</div><div style="font-size:10px;color:var(--text-muted)">${a.artist}</div></div>
       </div>`).join('')}
@@ -926,7 +932,7 @@ function openDetail(id) {
     <div style="position:relative;flex-shrink:0;">
       ${al.cover?`<img class="modal-cover" src="${al.cover}" alt="">`:`<div class="modal-cover-placeholder">🎵</div>`}
       <label style="position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,0.7);border-radius:6px;padding:4px 6px;font-size:10px;color:#ccc;cursor:pointer;z-index:2;">
-        ✎<input type="file" accept="image/*" style="display:none;" onchange="changeCover(${id}, this)">
+        ✎<input type="file" accept="image/*" style="display:none;" onchange="changeCover('${id}', this)">
       </label>
     </div>
     <div class="modal-info">
@@ -937,10 +943,10 @@ function openDetail(id) {
       ${al.notes?`<div style="font-size:12px;color:var(--text-dim);margin-top:6px;font-style:italic;">${al.notes}</div>`:''}
     </div>`;
   document.getElementById('detailActions').innerHTML = `
-    <button class="action-btn fav-btn" onclick="toggleFav(${id})">${al.fav?'♥ Unfavourite':'♡ Favourite'}</button>
-    <button class="action-btn crown-btn" onclick="setCrown(${id})">${al.id===crownId?'👑 Uncrown':'👑 Crown This'}</button>
-    <button class="action-btn" onclick="openEdit(${id})" style="border-color:#555;color:#ccc;">✏️ Edit</button>
-    <button class="action-btn danger" onclick="confirmDelete(${id})">🗑 Remove</button>`;
+    <button class="action-btn fav-btn" onclick="toggleFav('${id}')">${al.fav?'♥ Unfavourite':'♡ Favourite'}</button>
+    <button class="action-btn crown-btn" onclick="setCrown('${id}')">${al.id===crownId?'👑 Uncrown':'👑 Crown This'}</button>
+    <button class="action-btn" onclick="openEdit('${id}')" style="border-color:#555;color:#ccc;">✏️ Edit</button>
+    <button class="action-btn danger" onclick="confirmDelete('${id}')">🗑 Remove</button>`;
   document.getElementById('editSection').style.display = 'none';
   document.getElementById('detailOverlay').classList.add('open');
 }
@@ -968,8 +974,8 @@ function confirmDelete(id) {
     <div style="width:100%;text-align:center;padding:4px 0;">
       <div style="font-size:13px;color:var(--text-dim);margin-bottom:10px;">Remove this album?</div>
       <div style="display:flex;gap:8px;">
-        <button class="action-btn" onclick="openDetail(${id})" style="flex:1">Cancel</button>
-        <button class="action-btn danger" onclick="deleteAlbum(${id})" style="flex:1">Yes, remove</button>
+        <button class="action-btn" onclick="openDetail('${id}')" style="flex:1">Cancel</button>
+        <button class="action-btn danger" onclick="deleteAlbum('${id}')" style="flex:1">Yes, remove</button>
       </div>
     </div>`;
 }
