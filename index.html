@@ -309,7 +309,7 @@
     cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 6px;
   }
   .action-btn:active { transform: scale(0.96); }
-  .action-btn.crown-btn { border-color: var(--gold); color: var(--gold); }
+  .action-btn.goat-btn { border-color: var(--gold); color: var(--gold); }
   .action-btn.fav-btn { border-color: var(--fav); color: var(--fav); }
   .action-btn.danger { border-color: #c84040; color: #ff6060; background: #2a1a1a; }
 
@@ -441,6 +441,7 @@
     <div id="tab-wall">
       <div class="toolbar">
         <button class="tool-btn active" onclick="setSort('date',this)">Latest</button>
+        <button class="tool-btn" onclick="setSort('oldest',this)">Oldest</button>
         <button class="tool-btn" onclick="setSort('rating-desc',this)">Top Rated</button>
         <button class="tool-btn" onclick="setSort('rating-asc',this)">Lowest</button>
         <button class="tool-btn" onclick="setSort('alpha',this)">A–Z</button>
@@ -452,6 +453,7 @@
     <div id="tab-list" style="display:none">
       <div class="toolbar">
         <button class="tool-btn active" onclick="setListSort('date',this)">Latest</button>
+        <button class="tool-btn" onclick="setListSort('oldest',this)">Oldest</button>
         <button class="tool-btn" onclick="setListSort('rating-desc',this)">Top Rated</button>
         <button class="tool-btn" onclick="setListSort('alpha',this)">A–Z</button>
       </div>
@@ -643,7 +645,7 @@ const seedAlbums = [
   {title:"[pieces]",artist:"Oscar Lang",rating:6,emoji:"",notes:""},
   {title:"ADL",artist:"Yeat",rating:6,emoji:"",notes:""},
   {title:"BULLY",artist:"Ye",rating:9,emoji:"",notes:""},
-  {title:"Barter 16",artist:"Lil Uzi Vert",rating:8,emoji:"",notes:""},
+  {title:"Barter 16",artist:"Lil Uzi Vert",rating:8,emoji:"",notes:"",skipCover:true},
   {title:"Angel's Pulse",artist:"Blood Orange",rating:5,emoji:"",notes:""},
   {title:"Because The Internet",artist:"Childish Gambino",rating:7,emoji:"",notes:""},
   {title:"32 Levels",artist:"Clams Casino",rating:7,emoji:"",notes:""},
@@ -691,12 +693,15 @@ async function sbSetCrown(newCrownSbid, oldCrownSbid) {
 async function loadFromSupabase() {
   const { data, error } = await sb.from('albums').select('*').order('created_at', { ascending: true });
   if (error || !data) return false;
-  albums = data.map(r => ({
+  // assign sequential dateAdded so sort order is deterministic
+  const base = Date.now();
+  albums = data.map((r, i) => ({
     _sbid: r.id,
-    id: r.id, // use supabase uuid as id
+    id: r.id,
     title: r.title, artist: r.artist||'', rating: r.rating||0,
     genre: r.genre||'', cover: r.cover_url||'', emoji: r.emoji||'',
-    notes: r.notes||'', fav: r.is_favourite||false, dateAdded: new Date(r.created_at).getTime()
+    notes: r.notes||'', fav: r.is_favourite||false,
+    dateAdded: base - (data.length - i) * 1000 // oldest first = smallest dateAdded
   }));
   const crowned = data.find(r => r.is_crown);
   crownId = crowned ? crowned.id : null;
@@ -799,7 +804,8 @@ function ratingBg(r) {
 // ── SORT ──
 function getSorted(arr, sort) {
   const a = [...arr];
-  if (sort === 'date') return a.sort((x,y) => y.dateAdded - x.dateAdded);
+  if (sort === 'date') return a.sort((x,y) => y.dateAdded - x.dateAdded); // latest first
+  if (sort === 'oldest') return a.sort((x,y) => x.dateAdded - y.dateAdded); // oldest first
   if (sort === 'rating-desc') return a.sort((x,y) => y.rating - x.rating || y.dateAdded - x.dateAdded);
   if (sort === 'rating-asc') return a.sort((x,y) => x.rating - y.rating || y.dateAdded - x.dateAdded);
   if (sort === 'alpha') return a.sort((x,y) => x.title.localeCompare(y.title));
@@ -811,7 +817,7 @@ function renderWall() {
   document.getElementById('albumGrid').innerHTML = getSorted(albums, currentSort).map((al,i) => `
     <div class="album-card ${al.rating===10?'is-ten':''}" style="animation-delay:${Math.min(i,20)*0.03}s" onclick="openDetail('${al.id}')">
       ${al.cover ? `<img src="${al.cover}" alt="" loading="lazy">` : `<div class="cover-placeholder"><div class="ph-title">${al.title}</div><div class="ph-artist">${al.artist}</div></div>`}
-      ${al.id===crownId?`<div class="crown-badge">👑</div>`:''}
+      ${al.id===crownId?`<div class="crown-badge">🐐</div>`:''}
       ${al.fav&&al.id!==crownId?`<div class="fav-badge">♥</div>`:''}
       <div class="rating-badge" style="background:${ratingBg(al.rating)};color:#fff;">${al.rating}</div>
     </div>`).join('');
@@ -828,7 +834,7 @@ function renderList() {
       </div>
       <div class="list-right">
         <div class="list-rating" style="color:${ratingColor(al.rating)}">${al.rating}</div>
-        <div class="list-icons">${al.id===crownId?'👑':''}${al.fav?'♥':''}</div>
+        <div class="list-icons">${al.id===crownId?'🐐':''}${al.fav?'♥':''}</div>
       </div>
     </div>`).join('');
 }
@@ -837,7 +843,7 @@ function renderFavs() {
   const crowned = crownId ? albums.find(a => a.id === crownId) : null;
   document.getElementById('crownSection').innerHTML = crowned ? `
     <div class="crown-card" onclick="openDetail('${crowned.id}')">
-      <div class="crown-banner"><span>👑</span><span>THE ONE</span></div>
+      <div class="crown-banner"><span>🐐</span><span>THE GOAT</span></div>
       <div class="crown-content">
         ${crowned.cover?`<img class="crown-cover" src="${crowned.cover}" alt="">`:`<div class="crown-cover-placeholder">🎵</div>`}
         <div class="crown-info">
@@ -849,7 +855,7 @@ function renderFavs() {
     </div>` : `
     <div class="crown-card" style="border-color:var(--border);box-shadow:none;cursor:default;">
       <div class="crown-content">
-        <div class="crown-cover-placeholder" style="opacity:0.3;">👑</div>
+        <div class="crown-cover-placeholder" style="opacity:0.3;">🐐</div>
         <div class="crown-info">
           <div class="crown-album-title" style="color:var(--text-muted)">No Crown Yet</div>
           <div class="crown-artist" style="font-size:11px;color:var(--text-muted)">Open an album and crown your #1</div>
@@ -944,7 +950,7 @@ function openDetail(id) {
     </div>`;
   document.getElementById('detailActions').innerHTML = `
     <button class="action-btn fav-btn" onclick="toggleFav('${id}')">${al.fav?'♥ Unfavourite':'♡ Favourite'}</button>
-    <button class="action-btn crown-btn" onclick="setCrown('${id}')">${al.id===crownId?'👑 Uncrown':'👑 Crown This'}</button>
+    <button class="action-btn goat-btn" onclick="setCrown('${id}')">${al.id===crownId?'🐐 Un-GOAT':'🐐 GOAT This'}</button>
     <button class="action-btn" onclick="openEdit('${id}')" style="border-color:#555;color:#ccc;">✏️ Edit</button>
     <button class="action-btn danger" onclick="confirmDelete('${id}')">🗑 Remove</button>`;
   document.getElementById('editSection').style.display = 'none';
@@ -1165,8 +1171,10 @@ async function initSeed() {
   await loadFromSupabase();
   renderAll();
 
-  // now fetch Spotify cover + genre for each
+  // now fetch Spotify cover + genre for each (skip unreleased albums)
+  const skipTitles = new Set(seedAlbums.filter(a => a.skipCover).map(a => a.title));
   for (let i=0; i<albums.length; i++) {
+    if (skipTitles.has(albums[i].title)) continue; // unreleased — skip
     banner.textContent = `Fetching covers from Spotify... ${i+1}/${albums.length}`;
     const info = await spotifyFetchCover(albums[i].title, albums[i].artist);
     albums[i].cover = info.cover;
