@@ -555,6 +555,7 @@
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 // ── CONFIG ──
 const CLIENT_ID = '7cd46006a1c244378a1db5612a57a295';
@@ -562,6 +563,11 @@ const REDIRECT_URI = window.location.origin + window.location.pathname;
 const SCOPES = 'user-read-private';
 const STORAGE_KEY = '365albums_data';
 const TOKEN_KEY = '365albums_token';
+
+// ── SUPABASE ──
+const SUPA_URL = 'https://gbnjoxkjqisbebacbqin.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdibmpveGtqcWlzYmViYWNicWluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0MTU1MjUsImV4cCI6MjA5Mjk5MTUyNX0.tzJzx5uPlxjZ_WOiIEpJMOpEhOJOBNQUm-_VyGGbi-I';
+const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
 
 // ── SEED (titles + ratings only, covers fetched from Spotify) ──
 const seedAlbums = [
@@ -650,9 +656,49 @@ let currentSort = 'date', currentListSort = 'date', currentTab = 'wall';
 let selectedRating = null, selectedAlbumData = null, searchTimeout = null;
 let spotifyToken = null;
 
-// ── STORAGE ──
-function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify({ albums, crownId })); }
-function load() {
+// ── STORAGE (Supabase + localStorage cache) ──
+function saveLocal() { localStorage.setItem(STORAGE_KEY, JSON.stringify({ albums, crownId })); }
+function save() { saveLocal(); } // kept for internal calls that don't need async
+
+async function sbInsert(a) {
+  const row = { title:a.title, artist:a.artist, rating:a.rating, genre:a.genre||'', cover_url:a.cover||'', emoji:a.emoji||'', notes:a.notes||'', is_favourite:a.fav||false, is_crown:crownId===a.id };
+  const { data, error } = await sb.from('albums').insert([row]).select().single();
+  if (!error && data) { a._sbid = data.id; saveLocal(); }
+}
+
+async function sbUpdate(a) {
+  if (!a._sbid) return;
+  await sb.from('albums').update({ title:a.title, artist:a.artist, rating:a.rating, genre:a.genre||'', cover_url:a.cover||'', emoji:a.emoji||'', notes:a.notes||'', is_favourite:a.fav||false, is_crown:crownId===a.id }).eq('id', a._sbid);
+  saveLocal();
+}
+
+async function sbDelete(sbid) {
+  if (!sbid) return;
+  await sb.from('albums').delete().eq('id', sbid);
+}
+
+async function sbSetCrown(newCrownSbid, oldCrownSbid) {
+  if (oldCrownSbid) await sb.from('albums').update({ is_crown:false }).eq('id', oldCrownSbid);
+  if (newCrownSbid) await sb.from('albums').update({ is_crown:true }).eq('id', newCrownSbid);
+  saveLocal();
+}
+async function loadFromSupabase() {
+  const { data, error } = await sb.from('albums').select('*').order('created_at', { ascending: true });
+  if (error || !data) return false;
+  albums = data.map(r => ({
+    _sbid: r.id,
+    id: r.id, // use supabase uuid as id
+    title: r.title, artist: r.artist||'', rating: r.rating||0,
+    genre: r.genre||'', cover: r.cover_url||'', emoji: r.emoji||'',
+    notes: r.notes||'', fav: r.is_favourite||false, dateAdded: new Date(r.created_at).getTime()
+  }));
+  const crowned = data.find(r => r.is_crown);
+  crownId = crowned ? crowned.id : null;
+  saveLocal();
+  return true;
+}
+
+function loadLocal() {
   try {
     const d = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
     albums = d.albums || [];
@@ -928,9 +974,9 @@ function confirmDelete(id) {
     </div>`;
 }
 
-function deleteAlbum(id) { albums=albums.filter(a=>a.id!==id); if(crownId===id) crownId=null; save(); closeDetail(); renderAll(); }
-function toggleFav(id) { const al=albums.find(a=>a.id===id); if(!al) return; al.fav=!al.fav; save(); closeDetail(); renderAll(); }
-function setCrown(id) { crownId=crownId===id?null:id; save(); closeDetail(); renderAll(); }
+function deleteAlbum(id) { const al=albums.find(a=>a.id===id); albums=albums.filter(a=>a.id!==id); if(crownId===id) crownId=null; save(); closeDetail(); renderAll(); if(al?._sbid) sbDelete(al._sbid); }
+function toggleFav(id) { const al=albums.find(a=>a.id===id); if(!al) return; al.fav=!al.fav; save(); closeDetail(); renderAll(); sbUpdate(al); }
+function setCrown(id) { const oldAl=albums.find(a=>a.id===crownId); const newId=crownId===id?null:id; const newAl=albums.find(a=>a.id===newId); crownId=newId; save(); closeDetail(); renderAll(); sbSetCrown(newAl?._sbid||null, oldAl?._sbid||null); }
 
 // ── EDIT ──
 let editAlbumId = null;
@@ -977,6 +1023,7 @@ function saveEdit() {
   if (editNewCover) al.cover = editNewCover;
   editAlbumId = null; editNewCover = null;
   save();
+  sbUpdate(al);
   closeDetail();
   renderAll();
 }
@@ -1089,31 +1136,39 @@ async function submitAlbum() {
   const notes = document.getElementById('notesInput').value.trim();
   albums.push({ id: Date.now(), title, artist, rating: selectedRating, emoji: selectedRating===10?emoji:'', notes, cover, genre, fav: false, dateAdded: Date.now() });
   save();
+  const newAlbum = albums[albums.length-1];
+  sbInsert(newAlbum); // async, fire and forget — _sbid will be set when it resolves
   btn.disabled=false; btn.textContent='LOG ALBUM';
   manualCoverDataUrl = null;
   closeAdd();
   switchTab('wall');
 }
 
-// ── SEED INIT ──
+// ── SEED INIT (inserts all albums into Supabase, then fetches Spotify data) ──
 async function initSeed() {
-  const now = Date.now();
-  albums = seedAlbums.map((a,i) => ({
-    id: now-(seedAlbums.length-i)*1000,
-    title:a.title, artist:a.artist, rating:a.rating, emoji:a.emoji, notes:a.notes,
-    cover:'', genre:'', fav:false, dateAdded:now-(seedAlbums.length-i)*1000
-  }));
-  save(); renderAll();
   const banner = document.getElementById('fetchBanner');
   banner.style.display = 'block';
+  banner.textContent = 'Seeding albums into database...';
+
+  // insert all seed albums into Supabase (with empty cover/genre)
+  const rows = seedAlbums.map(a => ({ title:a.title, artist:a.artist, rating:a.rating, emoji:a.emoji||'', notes:a.notes||'', cover_url:'', genre:'', is_favourite:false, is_crown:false }));
+  const { data, error } = await sb.from('albums').insert(rows).select();
+  if (error || !data) { banner.textContent = 'Seed failed. Check console.'; console.error(error); return; }
+
+  // load back from Supabase so we have _sbid on each
+  await loadFromSupabase();
+  renderAll();
+
+  // now fetch Spotify cover + genre for each
   for (let i=0; i<albums.length; i++) {
     banner.textContent = `Fetching covers from Spotify... ${i+1}/${albums.length}`;
     const info = await spotifyFetchCover(albums[i].title, albums[i].artist);
     albums[i].cover = info.cover;
     albums[i].genre = info.genre;
-    if (i%5===0) { save(); renderAll(); }
+    if (albums[i]._sbid) await sb.from('albums').update({ cover_url:info.cover||'', genre:info.genre||'' }).eq('id', albums[i]._sbid);
+    if (i%5===0) { saveLocal(); renderAll(); }
   }
-  save(); renderAll();
+  saveLocal(); renderAll();
   banner.style.display = 'none';
 }
 
@@ -1136,13 +1191,18 @@ async function boot() {
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('appShell').style.display = 'block';
 
-  load();
+  // show local cache instantly while Supabase loads
+  loadLocal();
   renderAll();
 
-  if (albums.length === 0) {
+  // load from Supabase (source of truth)
+  const loaded = await loadFromSupabase();
+  if (!loaded || albums.length === 0) {
+    // Supabase empty — run seed
     await initSeed();
   } else {
-    // re-fetch cover AND genre for anything missing either
+    renderAll();
+    // fetch Spotify data for any rows missing cover or genre
     const needsFetch = albums.filter(a => !a.cover || !a.genre);
     if (needsFetch.length > 0) {
       const banner = document.getElementById('fetchBanner');
@@ -1154,10 +1214,11 @@ async function boot() {
           const info = await spotifyFetchCover(albums[i].title, albums[i].artist);
           if (!albums[i].cover) albums[i].cover = info.cover;
           if (!albums[i].genre) albums[i].genre = info.genre;
-          if (done%5===0) { save(); renderAll(); }
+          if (albums[i]._sbid) await sb.from('albums').update({ cover_url:info.cover||'', genre:info.genre||'' }).eq('id', albums[i]._sbid);
+          if (done%5===0) { saveLocal(); renderAll(); }
         }
       }
-      save(); renderAll();
+      saveLocal(); renderAll();
       banner.style.display = 'none';
     }
   }
