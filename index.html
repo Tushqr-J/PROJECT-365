@@ -672,7 +672,12 @@ function save() { saveLocal(); } // kept for internal calls that don't need asyn
 async function sbInsert(a) {
   const row = { title:a.title, artist:a.artist, rating:a.rating, genre:a.genre||'', cover_url:a.cover||'', emoji:a.emoji||'', notes:a.notes||'', is_favourite:a.fav||false, is_crown:crownId===a.id, sort_order:a.sortOrder||9999 };
   const { data, error } = await sb.from('albums').insert([row]).select().single();
-  if (!error && data) { a._sbid = data.id; saveLocal(); }
+  if (!error && data) {
+    a._sbid = data.id;
+    a.id = data.id; // replace temp numeric id with real UUID so taps work
+    saveLocal();
+    renderAll(); // re-render so onclick uses the correct id
+  }
 }
 
 async function sbUpdate(a) {
